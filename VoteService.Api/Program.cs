@@ -13,7 +13,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "KITHU Vote Service", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Asmitha Vote Service", Version = "v1" });
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "JWT Authorization header using the Bearer scheme.",
@@ -151,7 +151,7 @@ app.MapControllers();
 app.Lifetime.ApplicationStarted.Register(() =>
 {
     Console.WriteLine("\n----------------------------------------------------------------");
-    Console.WriteLine("   KITHU Vote Service is running!");
+    Console.WriteLine("   Asmitha Vote Service is running!");
     Console.WriteLine("   Swagger UI: http://localhost:5002/swagger");
     Console.WriteLine("----------------------------------------------------------------\n");
 });
