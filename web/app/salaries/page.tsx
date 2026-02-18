@@ -92,6 +92,7 @@ export default function SalariesPage() {
                             <p className="text-xs font-bold uppercase tracking-[0.24em] text-cyan-700">Transparency Hub</p>
                             <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-slate-900">Community Salaries</h1>
                             <p className="text-slate-600 max-w-2xl">Explore real salary submissions from the community, compare compensation trends, and vote on data quality.</p>
+                            <p className="text-sm text-slate-500">Use the <span className="font-semibold text-slate-700">Review &amp; Vote</span> action in each row to moderate submissions.</p>
                         </div>
                         <div className="flex flex-col sm:flex-row gap-3">
                             <Link href="/salary/submit">
@@ -133,14 +134,14 @@ export default function SalariesPage() {
                                     <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-[0.18em]">Experience</th>
                                     <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-[0.18em]">Salary</th>
                                     <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-[0.18em]">Status</th>
+                                    <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-[0.18em] text-right">Action</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100">
                                 {salaries.map((s) => (
                                     <tr
                                         key={s.id}
-                                        className="hover:bg-slate-50/90 transition-colors cursor-pointer group"
-                                        onClick={() => router.push(`/vote/voting/${s.id}`)}
+                                        className="hover:bg-slate-50/90 transition-colors group"
                                     >
                                         <td className="px-6 py-4">
                                             <div className="font-semibold text-slate-900">{s.role}</div>
@@ -158,11 +159,20 @@ export default function SalariesPage() {
                                                 {s.status}
                                             </span>
                                         </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <Button
+                                                variant={s.status === 'PENDING' ? 'primary' : 'outline'}
+                                                className="text-xs rounded-lg px-3.5 py-2"
+                                                onClick={() => router.push(`/vote/voting/${s.id}`)}
+                                            >
+                                                {s.status === 'PENDING' ? 'Review & Vote' : 'View Submission'}
+                                            </Button>
+                                        </td>
                                     </tr>
                                 ))}
                                 {salaries.length === 0 && (
                                     <tr>
-                                        <td colSpan={5} className="px-6 py-12 text-center text-slate-500 font-medium">
+                                        <td colSpan={6} className="px-6 py-12 text-center text-slate-500 font-medium">
                                             No salary submissions found yet.
                                         </td>
                                     </tr>
