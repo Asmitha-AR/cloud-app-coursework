@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
 import { salaryApi } from '@/lib/api';
 import Link from 'next/link';
+import BrandLogo from '@/components/BrandLogo';
 
 export default function SalariesPage() {
     const router = useRouter();
@@ -44,7 +45,7 @@ export default function SalariesPage() {
             <nav className="border-b border-zinc-200 bg-white items-center">
                 <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between w-full">
                     <div className="flex items-center space-x-2.5">
-                        <Link href="/" className="w-8 h-8 bg-black rounded-lg flex items-center justify-center text-white font-bold text-xs">K</Link>
+                        <Link href="/"><BrandLogo size={48} /></Link>
                         <span className="font-bold text-lg tracking-tight">Salaries</span>
                     </div>
                     <Link href="/">

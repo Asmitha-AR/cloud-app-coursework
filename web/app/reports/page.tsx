@@ -7,6 +7,7 @@ import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { voteApi } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import BrandLogo from '@/components/BrandLogo';
 
 type ReportItem = {
     id: string;
@@ -186,7 +187,7 @@ export default function ReportsPage() {
             <nav className="border-b border-zinc-200 bg-white">
                 <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between w-full">
                     <div className="flex items-center space-x-2.5">
-                        <Link href="/" className="w-8 h-8 bg-black rounded-lg flex items-center justify-center text-white font-bold text-xs">K</Link>
+                        <Link href="/"><BrandLogo size={48} /></Link>
                         <span className="font-bold text-lg tracking-tight">Moderation Reports</span>
                     </div>
                     <Link href="/">

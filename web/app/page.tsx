@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
 import { useAuth } from '@/context/AuthContext';
 import { Toast } from '@/components/ui/Toast';
+import BrandLogo from '@/components/BrandLogo';
 
 export default function Home() {
   const router = useRouter();
@@ -49,9 +50,7 @@ export default function Home() {
       <aside className="hidden lg:flex w-64 flex-col border-r border-zinc-200 bg-white">
         <div className="p-8">
           <div className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center text-white font-bold text-xs uppercase tracking-tighter">
-              K
-            </div>
+            <BrandLogo size={48} />
           </div>
         </div>
 
@@ -89,7 +88,7 @@ export default function Home() {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top Header - Mobile only */}
         <nav className="lg:hidden border-b border-zinc-200 bg-white h-16 px-6 flex items-center justify-between">
-          <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center text-white font-bold text-xs">K</div>
+          <BrandLogo size={48} />
           <button className="p-2 -mr-2 text-zinc-500">
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />

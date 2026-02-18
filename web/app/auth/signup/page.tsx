@@ -7,6 +7,7 @@ import { authApi } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import BrandLogo from '@/components/BrandLogo';
 
 export default function SignupPage() {
     const router = useRouter();
@@ -48,7 +49,7 @@ export default function SignupPage() {
         <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-white relative">
             <header className="absolute top-0 left-0 right-0 p-6 flex items-center justify-between">
                 <Link href="/" className="flex items-center space-x-2">
-                    <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center text-white font-bold text-xs">K</div>
+                    <BrandLogo size={48} />
                 </Link>
                 <Link href="/salary/submit">
                     <Button className="text-sm font-bold">
