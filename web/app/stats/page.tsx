@@ -18,6 +18,7 @@ type SalaryStats = {
 export default function StatsPage() {
     const [stats, setStats] = useState<SalaryStats | null>(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
     const [filters, setFilters] = useState({
         country: '',
         role: '',
@@ -25,6 +26,7 @@ export default function StatsPage() {
     });
     const fetchStats = async () => {
         setLoading(true);
+        setError('');
         try {
             const params = new URLSearchParams();
             if (filters.country) params.append('country', filters.country);
@@ -34,7 +36,8 @@ export default function StatsPage() {
             const response = await salaryApi.get(`/salaries/stats?${params.toString()}`);
             setStats(response.data);
         } catch {
-            console.error('Failed to fetch stats');
+            setStats(null);
+            setError('Failed to fetch insights. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -87,6 +90,11 @@ export default function StatsPage() {
                     </div>
 
                     <div className="lg:col-span-3 space-y-8">
+                        {error && (
+                            <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+                                {error}
+                            </div>
+                        )}
                         {loading ? (
                             <div className="bg-white/90 border border-slate-200/80 p-20 rounded-3xl flex items-center justify-center shadow-sm shadow-slate-900/5">
                                 <div className="w-6 h-6 border-2 border-zinc-200 border-t-black rounded-full animate-spin" />
