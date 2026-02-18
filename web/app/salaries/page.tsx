@@ -86,7 +86,7 @@ export default function SalariesPage() {
                                     <tr
                                         key={s.id}
                                         className="hover:bg-zinc-50/50 transition-colors cursor-pointer group"
-                                        onClick={() => router.push(`/salaries/${s.id}`)}
+                                        onClick={() => router.push(`/vote/voting/${s.id}`)}
                                     >
                                         <td className="px-6 py-4">
                                             <div className="font-semibold text-zinc-900">{s.role}</div>

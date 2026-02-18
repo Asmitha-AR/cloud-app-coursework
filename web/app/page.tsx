@@ -162,7 +162,7 @@ export default function Home() {
                 <div className="grid grid-cols-2 gap-4">
                   <button
                     className="p-8 bg-black text-white rounded-3xl text-left hover:scale-[1.02] transition-transform shadow-lg shadow-black/10 flex flex-col h-full"
-                    onClick={() => router.push('/reports')}
+                    onClick={() => router.push('/vote/report')}
                   >
                     <svg className="w-6 h-6 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h10M7 16h6M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z" />

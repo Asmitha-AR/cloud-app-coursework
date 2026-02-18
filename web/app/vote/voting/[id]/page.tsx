@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, usePathname } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Button from '@/components/ui/Button';
 import { salaryApi, voteApi } from '@/lib/api';
 import { Toast } from '@/components/ui/Toast';
@@ -10,8 +10,7 @@ import { useAuth } from '@/context/AuthContext';
 
 export default function SalaryDetailsPage() {
     const { id } = useParams();
-    const pathname = usePathname();
-    const listPath = pathname?.startsWith('/vote/voting') ? '/vote/voting' : '/salaries';
+    const listPath = '/salaries';
     const { isAuthenticated } = useAuth();
     const [salary, setSalary] = useState<any>(null);
     const [summary, setSummary] = useState<any>(null);
