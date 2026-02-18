@@ -1,7 +1,8 @@
 import axios, { InternalAxiosRequestConfig } from 'axios';
 
-const AUTH_URL = 'http://localhost:5000/api';
-const SALARY_URL = 'http://localhost:5001/api';
+const AUTH_URL = 'http://127.0.0.1:5100/api';
+const SALARY_URL = 'http://127.0.0.1:5001/api';
+const VOTE_URL = '/api/vote';
 
 let accessToken: string | null = null;
 
@@ -71,5 +72,13 @@ export const salaryApi = axios.create({
 });
 salaryApi.interceptors.request.use(addAuthToken, (error) => Promise.reject(error));
 salaryApi.interceptors.response.use((response) => response, handleAuthError);
+
+// Vote Service API
+export const voteApi = axios.create({
+  baseURL: VOTE_URL,
+  withCredentials: false,
+});
+voteApi.interceptors.request.use(addAuthToken, (error) => Promise.reject(error));
+voteApi.interceptors.response.use((response) => response, handleAuthError);
 
 export default salaryApi;

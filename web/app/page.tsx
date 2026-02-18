@@ -1,27 +1,30 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
 import { useAuth } from '@/context/AuthContext';
 import { Toast } from '@/components/ui/Toast';
 
 export default function Home() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { isAuthenticated, logout, isLoading } = useAuth();
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [authParamPresent, setAuthParamPresent] = useState(false);
 
   useEffect(() => {
+    const authParam = new URLSearchParams(window.location.search).get('auth');
+    setAuthParamPresent(!!authParam);
+
     if (!isLoading && !isAuthenticated) {
       router.push('/auth/login');
-    } else if (isAuthenticated && searchParams.get('auth') === 'success') {
+    } else if (isAuthenticated && authParam === 'success') {
       setToastMessage('Successfully logged in');
       setShowToast(true);
       window.history.replaceState({}, '', '/');
     }
-  }, [isAuthenticated, isLoading, router, searchParams]);
+  }, [isAuthenticated, isLoading, router]);
 
   const handleLogout = async () => {
     await logout();
@@ -107,7 +110,7 @@ export default function Home() {
             </header>
 
             {/* Success Bar if just logged in */}
-            {searchParams.get('auth') && (
+            {authParamPresent && (
               <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-xl flex items-center space-x-3 text-emerald-800 text-sm font-medium animate-in slide-in-from-top-4 duration-500">
                 <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-white">
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -158,11 +161,14 @@ export default function Home() {
               <div className="space-y-4">
                 <h3 className="font-bold text-lg px-1">Quick Actions</h3>
                 <div className="grid grid-cols-2 gap-4">
-                  <button className="p-8 bg-black text-white rounded-3xl text-left hover:scale-[1.02] transition-transform shadow-lg shadow-black/10 flex flex-col h-full">
+                  <button
+                    className="p-8 bg-black text-white rounded-3xl text-left hover:scale-[1.02] transition-transform shadow-lg shadow-black/10 flex flex-col h-full"
+                    onClick={() => router.push('/reports')}
+                  >
                     <svg className="w-6 h-6 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0h-3m-9-4h18c1.104 0 2 .896 2 2v9c0 1.104-.896 2-2 2H3c-1.104 0-2-.896-2-2v-9c0-1.104.896-2 2-2z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h10M7 16h6M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z" />
                     </svg>
-                    <span className="font-bold">New Action</span>
+                    <span className="font-bold">View Reports</span>
                   </button>
                   <button
                     className="p-8 bg-white border border-zinc-200 text-zinc-900 rounded-3xl text-left hover:bg-zinc-50 transition-colors flex flex-col h-full"

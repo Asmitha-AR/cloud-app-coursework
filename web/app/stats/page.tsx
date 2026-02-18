@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { salaryApi } from '@/lib/api';
@@ -15,8 +15,6 @@ export default function StatsPage() {
         role: '',
         level: ''
     });
-    const searchParams = useSearchParams();
-
     const fetchStats = async () => {
         setLoading(true);
         try {
