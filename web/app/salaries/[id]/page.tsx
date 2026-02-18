@@ -1,28 +1,34 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 import Button from '@/components/ui/Button';
-import { salaryApi } from '@/lib/api';
+import { salaryApi, voteApi } from '@/lib/api';
 import { Toast } from '@/components/ui/Toast';
 import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
 
 export default function SalaryDetailsPage() {
     const { id } = useParams();
-    const router = useRouter();
+    const pathname = usePathname();
+    const listPath = pathname?.startsWith('/vote/voting') ? '/vote/voting' : '/salaries';
+    const { isAuthenticated } = useAuth();
     const [salary, setSalary] = useState<any>(null);
+    const [summary, setSummary] = useState<any>(null);
     const [loading, setLoading] = useState(true);
-    const [updatingStatus, setUpdatingStatus] = useState(false);
+    const [updatingVote, setUpdatingVote] = useState(false);
     const [error, setError] = useState('');
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [toast, setToast] = useState('');
 
     useEffect(() => {
-        setIsLoggedIn(!!localStorage.getItem('token'));
         const fetchDetails = async () => {
             try {
-                const response = await salaryApi.get(`/salaries/${id}`);
-                setSalary(response.data);
+                const [salaryRes, summaryRes] = await Promise.all([
+                    salaryApi.get(`/salaries/${id}`),
+                    voteApi.get(`/votes/${id}/summary`)
+                ]);
+                setSalary(salaryRes.data);
+                setSummary(summaryRes.data);
             } catch (err) {
                 setError('Could not find salary details.');
             } finally {
@@ -32,17 +38,38 @@ export default function SalaryDetailsPage() {
         fetchDetails();
     }, [id]);
 
-    const handleStatusUpdate = async (newStatus: string) => {
-        setUpdatingStatus(true);
+    const refreshData = async () => {
+        const [salaryRes, summaryRes] = await Promise.all([
+            salaryApi.get(`/salaries/${id}`),
+            voteApi.get(`/votes/${id}/summary`)
+        ]);
+        setSalary(salaryRes.data);
+        setSummary(summaryRes.data);
+    };
+
+    const handleVote = async (voteType: 'UP' | 'DOWN') => {
+        setUpdatingVote(true);
         try {
-            await salaryApi.patch(`/salaries/${id}/status`, { status: newStatus });
-            const response = await salaryApi.get(`/salaries/${id}`);
-            setSalary(response.data);
-            setToast(`Status updated to ${newStatus}`);
+            await voteApi.post('/votes', { submissionId: id, voteType });
+            await refreshData();
+            setToast(`Vote submitted: ${voteType}`);
         } catch (err) {
-            setToast('Failed to update status');
+            setToast('Voting failed. Please login first.');
         } finally {
-            setUpdatingStatus(false);
+            setUpdatingVote(false);
+        }
+    };
+
+    const handleRemoveVote = async () => {
+        setUpdatingVote(true);
+        try {
+            await voteApi.delete(`/votes/${id}`);
+            await refreshData();
+            setToast('Vote removed');
+        } catch (err) {
+            setToast('Failed to remove vote');
+        } finally {
+            setUpdatingVote(false);
         }
     };
 
@@ -55,7 +82,7 @@ export default function SalaryDetailsPage() {
     if (error || !salary) return (
         <div className="min-h-screen flex flex-col items-center justify-center p-6 space-y-4">
             <p className="text-zinc-500 font-medium">{error || 'Salary not found'}</p>
-            <Link href="/salaries"><Button variant="outline">Back to List</Button></Link>
+            <Link href={listPath}><Button variant="outline">Back to List</Button></Link>
         </div>
     );
 
@@ -65,7 +92,7 @@ export default function SalaryDetailsPage() {
 
             <nav className="border-b border-zinc-200 bg-white">
                 <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <Link href="/salaries" className="flex items-center text-sm font-bold text-zinc-500 hover:text-black transition-colors">
+                    <Link href={listPath} className="flex items-center text-sm font-bold text-zinc-500 hover:text-black transition-colors">
                         <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
                         </svg>
@@ -84,6 +111,11 @@ export default function SalaryDetailsPage() {
                             <span className="bg-zinc-100 text-zinc-600 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded">
                                 {salary.status}
                             </span>
+                            {summary && (
+                                <span className="bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded">
+                                    Score {summary.score}
+                                </span>
+                            )}
                             {salary.isAnonymous && (
                                 <span className="bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded">
                                     Anonymous
@@ -123,43 +155,80 @@ export default function SalaryDetailsPage() {
                     </div>
                 </section>
 
-                {isLoggedIn && (
-                    <section className="bg-white border border-zinc-200 p-8 lg:p-12 rounded-[40px] space-y-8">
-                        <div className="space-y-1">
-                            <h3 className="text-xl font-bold tracking-tight">Status Moderation</h3>
-                            <p className="text-zinc-500 text-sm">Update the submission status to reflect its validity.</p>
-                        </div>
+                <section className="bg-white border border-zinc-200 p-8 lg:p-12 rounded-[40px] space-y-8">
+                    <div className="space-y-1">
+                        <h3 className="text-xl font-bold tracking-tight">Community Voting</h3>
+                        <p className="text-zinc-500 text-sm">Vote to help validate this submission.</p>
+                    </div>
 
+                    {summary && (
+                        <div className="grid grid-cols-3 gap-4 text-center">
+                            <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-200">
+                                <p className="text-xs uppercase tracking-widest text-zinc-400 font-bold">Upvotes</p>
+                                <p className="text-2xl font-bold text-zinc-900">{summary.upvotes}</p>
+                            </div>
+                            <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-200">
+                                <p className="text-xs uppercase tracking-widest text-zinc-400 font-bold">Downvotes</p>
+                                <p className="text-2xl font-bold text-zinc-900">{summary.downvotes}</p>
+                            </div>
+                            <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-200">
+                                <p className="text-xs uppercase tracking-widest text-zinc-400 font-bold">Score</p>
+                                <p className="text-2xl font-bold text-zinc-900">{summary.score}</p>
+                            </div>
+                        </div>
+                    )}
+
+                    {isAuthenticated ? (
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <Button
-                                onClick={() => handleStatusUpdate('APPROVED')}
-                                className={`py-4 ${salary.status === 'APPROVED' ? 'bg-emerald-600 border-emerald-600' : 'bg-black'}`}
-                                isLoading={updatingStatus && salary.status !== 'APPROVED'}
-                                disabled={salary.status === 'APPROVED'}
+                                onClick={() => handleVote('UP')}
+                                className="py-4"
+                                isLoading={updatingVote}
                             >
-                                Approve
+                                Upvote
                             </Button>
-
                             <Button
-                                onClick={() => handleStatusUpdate('REJECTED')}
+                                onClick={() => handleVote('DOWN')}
                                 variant="outline"
-                                className={`py-4 border-red-200 text-red-600 hover:bg-red-50 ${salary.status === 'REJECTED' ? 'bg-red-50 border-red-300' : ''}`}
-                                isLoading={updatingStatus && salary.status !== 'REJECTED'}
-                                disabled={salary.status === 'REJECTED'}
+                                className="py-4"
+                                isLoading={updatingVote}
                             >
-                                Deny
+                                Downvote
                             </Button>
-
                             <Button
-                                onClick={() => handleStatusUpdate('PENDING')}
+                                onClick={handleRemoveVote}
                                 variant="ghost"
-                                className={`py-4 text-zinc-500 hover:text-black ${salary.status === 'PENDING' ? 'bg-zinc-100' : ''}`}
-                                isLoading={updatingStatus && salary.status !== 'PENDING'}
-                                disabled={salary.status === 'PENDING'}
+                                className="py-4"
+                                isLoading={updatingVote}
                             >
-                                Pending
+                                Remove Vote
                             </Button>
                         </div>
+                    ) : (
+                        <p className="text-sm text-zinc-500">Login is required to vote or report.</p>
+                    )}
+                </section>
+
+                {isAuthenticated && (
+                    <section className="bg-white border border-zinc-200 p-8 lg:p-12 rounded-[40px] space-y-8">
+                        <div className="space-y-1">
+                            <h3 className="text-xl font-bold tracking-tight">Report Submission</h3>
+                            <p className="text-zinc-500 text-sm">Flag this entry if the data appears incorrect.</p>
+                        </div>
+                        <Button
+                            variant="outline"
+                            className="py-4 border-red-200 text-red-600 hover:bg-red-50"
+                            onClick={async () => {
+                                try {
+                                    await voteApi.post('/reports', { submissionId: id, reason: 'Suspicious salary data' });
+                                    setToast('Report submitted');
+                                } catch {
+                                    setToast('Failed to submit report');
+                                }
+                            }}
+                        >
+                            Report This Entry
+                        </Button>
                     </section>
                 )}
 

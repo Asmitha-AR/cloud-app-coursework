@@ -7,10 +7,22 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseUrls("http://0.0.0.0:5100");
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("frontend", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:3000")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+    });
+});
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "KITHU Identity Service", Version = "v1" });
@@ -81,11 +93,7 @@ app.UseSwaggerUI();
 // app.UseHttpsRedirection();
 
 // CORS for Next.js (must specify origin when using credentials)
-app.UseCors(x => x
-    .WithOrigins("http://localhost:3000")
-    .AllowAnyMethod()
-    .AllowAnyHeader()
-    .AllowCredentials());  // Required for httpOnly cookies
+app.UseCors("frontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -139,7 +147,7 @@ app.Lifetime.ApplicationStarted.Register(() =>
 {
     Console.WriteLine("\n----------------------------------------------------------------");
     Console.WriteLine("   🚀 KITHU Identity Service is running!");
-    Console.WriteLine("   📄 Swagger UI: http://localhost:5000/swagger");
+    Console.WriteLine("   📄 Swagger UI: http://localhost:5100/swagger");
     Console.WriteLine("----------------------------------------------------------------\n");
 });
 

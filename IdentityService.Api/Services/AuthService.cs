@@ -102,6 +102,7 @@ public class AuthService : IAuthService
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
         var key = Encoding.ASCII.GetBytes(jwtSettings["SecretKey"]!);
+        var role = ResolveRole(user.Email);
 
         // Generate Access Token
         var tokenDescriptor = new SecurityTokenDescriptor
@@ -110,7 +111,9 @@ public class AuthService : IAuthService
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim("id", user.Id.ToString())
+                new Claim("id", user.Id.ToString()),
+                new Claim("role", role),
+                new Claim(ClaimTypes.Role, role)
             }),
             Expires = DateTime.UtcNow.AddMinutes(int.Parse(jwtSettings["ExpirationMinutes"]!)),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
@@ -135,6 +138,25 @@ public class AuthService : IAuthService
         await _context.SaveChangesAsync();
 
         return new AuthResponse(accessToken, refreshToken.Token, user.Email);
+    }
+
+    private string ResolveRole(string email)
+    {
+        var normalizedEmail = email.Trim().ToLowerInvariant();
+        var adminEmails = _configuration.GetSection("Authorization:AdminEmails").Get<string[]>() ?? Array.Empty<string>();
+        var moderatorEmails = _configuration.GetSection("Authorization:ModeratorEmails").Get<string[]>() ?? Array.Empty<string>();
+
+        if (adminEmails.Any(e => string.Equals(e.Trim(), normalizedEmail, StringComparison.OrdinalIgnoreCase)))
+        {
+            return "ADMIN";
+        }
+
+        if (moderatorEmails.Any(e => string.Equals(e.Trim(), normalizedEmail, StringComparison.OrdinalIgnoreCase)))
+        {
+            return "MODERATOR";
+        }
+
+        return "USER";
     }
 
     private static string GenerateSecureToken()

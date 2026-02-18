@@ -9,6 +9,7 @@ A minimalist, high-end platform for anonymous salary sharing, community verifica
 
 -   `/IdentityService.Api`: .NET 10 Web API for Authentication and Identity (Port 5000).
 -   `/SalaryService.Api`: .NET 10 Web API for Salary Submissions and Stats (Port 5001).
+-   `/VoteService.Api`: .NET 10 Web API for Votes, Reports, and Approval Thresholds (Port 5002).
 -   `/web`: Next.js 15 Frontend with Tailwind CSS (Port 3000).
 -   `docker-compose.yml`: Infrastructure (PostgreSQL).
 
@@ -44,6 +45,13 @@ dotnet run
 ```
 - **Swagger**: `http://localhost:5001/swagger`
 
+**Vote Service (Community)**
+```bash
+cd VoteService.Api
+dotnet run
+```
+- **Swagger**: `http://localhost:5002/swagger`
+
 ### 4. Frontend Setup
 Navigate to the web directory and start the dev server:
 ```bash
@@ -61,6 +69,7 @@ npm run dev
 | **Database** | PostgreSQL 15 | `5432` | Shared data storage |
 | **Identity API** | .NET 10 | `5000` | Auth, Signup, Login |
 | **Salary API** | .NET 10 | `5001` | Salary data & Stats |
+| **Vote API** | .NET 10 | `5002` | Upvote/Downvote, Reports, Auto-Approval |
 | **Frontend** | Next.js 15 | `3000` | User Interface |
 
 ---
@@ -91,4 +100,3 @@ To manually inspect data:
 - **Minimalist Aesthetic**: Pure black and white design system.
 - **Premium UX**: Smooth transitions, card-based layouts, and absolute clarity.
 - **Security First**: JWT-based authentication for sensitive community actions.
-
