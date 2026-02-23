@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityService.Api", "Iden
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoteService.Api", "VoteService.Api\VoteService.Api.csproj", "{52497B03-E916-4759-AF25-2997BD6CAD0E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatsService.Api", "StatsService.Api\StatsService.Api.csproj", "{177FEA87-845D-40B4-9278-9E60B7B2B9DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,18 @@ Global
 		{52497B03-E916-4759-AF25-2997BD6CAD0E}.Release|x64.Build.0 = Release|Any CPU
 		{52497B03-E916-4759-AF25-2997BD6CAD0E}.Release|x86.ActiveCfg = Release|Any CPU
 		{52497B03-E916-4759-AF25-2997BD6CAD0E}.Release|x86.Build.0 = Release|Any CPU
+		{177FEA87-845D-40B4-9278-9E60B7B2B9DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{177FEA87-845D-40B4-9278-9E60B7B2B9DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{177FEA87-845D-40B4-9278-9E60B7B2B9DD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{177FEA87-845D-40B4-9278-9E60B7B2B9DD}.Debug|x64.Build.0 = Debug|Any CPU
+		{177FEA87-845D-40B4-9278-9E60B7B2B9DD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{177FEA87-845D-40B4-9278-9E60B7B2B9DD}.Debug|x86.Build.0 = Debug|Any CPU
+		{177FEA87-845D-40B4-9278-9E60B7B2B9DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{177FEA87-845D-40B4-9278-9E60B7B2B9DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{177FEA87-845D-40B4-9278-9E60B7B2B9DD}.Release|x64.ActiveCfg = Release|Any CPU
+		{177FEA87-845D-40B4-9278-9E60B7B2B9DD}.Release|x64.Build.0 = Release|Any CPU
+		{177FEA87-845D-40B4-9278-9E60B7B2B9DD}.Release|x86.ActiveCfg = Release|Any CPU
+		{177FEA87-845D-40B4-9278-9E60B7B2B9DD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
