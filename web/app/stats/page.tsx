@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
-import { salaryApi } from '@/lib/api';
+import { statsApi } from '@/lib/api';
 import Link from 'next/link';
 import BrandLogo from '@/components/BrandLogo';
 
@@ -24,6 +24,7 @@ export default function StatsPage() {
         role: '',
         level: ''
     });
+
     const fetchStats = async () => {
         setLoading(true);
         setError('');
@@ -33,7 +34,7 @@ export default function StatsPage() {
             if (filters.role) params.append('role', filters.role);
             if (filters.level) params.append('level', filters.level);
 
-            const response = await salaryApi.get(`/salaries/stats?${params.toString()}`);
+            const response = await statsApi.get(`/stats/summary?${params.toString()}`);
             setStats(response.data);
         } catch {
             setStats(null);
