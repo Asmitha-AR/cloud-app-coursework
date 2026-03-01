@@ -7,9 +7,10 @@ A minimalist, high-end platform for anonymous salary sharing, community verifica
 
 ## Project Structure
 
--   `/IdentityService.Api`: .NET 10 Web API for Authentication and Identity (Port 5000).
+-   `/IdentityService.Api`: .NET 10 Web API for Authentication and Identity (Port 5100).
 -   `/SalaryService.Api`: .NET 10 Web API for Salary Submissions and Stats (Port 5001).
 -   `/VoteService.Api`: .NET 10 Web API for Votes, Reports, and Approval Thresholds (Port 5002).
+-   `/StatsService.Api`: .NET 10 Web API for Aggregated Salary Insights (Port 5019).
 -   `/web`: Next.js 15 Frontend with Tailwind CSS (Port 3000).
 -   `docker-compose.yml`: Infrastructure (PostgreSQL).
 
@@ -29,14 +30,14 @@ docker-compose up -d
 ```
 
 ### 3. Backend Setup
-You need to run both microservices in separate terminal windows:
+You need to run each microservice in a separate terminal window:
 
 **Identity Service (Auth)**
 ```bash
 cd IdentityService.Api
 dotnet run
 ```
-- **Swagger**: `http://localhost:5000/swagger`
+- **Swagger**: `http://localhost:5100/swagger`
 
 **Salary Service (Data)**
 ```bash
@@ -51,6 +52,13 @@ cd VoteService.Api
 dotnet run
 ```
 - **Swagger**: `http://localhost:5002/swagger`
+
+**Stats Service (Insights)**
+```bash
+cd StatsService.Api
+dotnet run
+```
+- **Swagger**: `http://localhost:5019/swagger`
 
 ### 4. Frontend Setup
 Navigate to the web directory and start the dev server:
@@ -67,9 +75,10 @@ npm run dev
 | Service | Technology | Port | Purpose |
 | :--- | :--- | :--- | :--- |
 | **Database** | PostgreSQL 15 | `5432` | Shared data storage |
-| **Identity API** | .NET 10 | `5000` | Auth, Signup, Login |
-| **Salary API** | .NET 10 | `5001` | Salary data & Stats |
+| **Identity API** | .NET 10 | `5100` | Auth, Signup, Login |
+| **Salary API** | .NET 10 | `5001` | Salary data & Moderation |
 | **Vote API** | .NET 10 | `5002` | Upvote/Downvote, Reports, Auto-Approval |
+| **Stats API** | .NET 10 | `5019` | Aggregated Salary Insights |
 | **Frontend** | Next.js 15 | `3000` | User Interface |
 
 ---
@@ -81,6 +90,13 @@ npm run dev
 - **Community Voting**: Upvote or Downvote entries to establish a **Trust Score**.
 - **Insights**: Aggregated statistics (Average, Median, P25, P75) based on approved data.
 
+### 📊 Salary Insights (Stats Service)
+- **No Login Required**: Insights are publicly accessible to all users.
+- **Aggregated Only**: Returns computed metrics only — no individual records or personal data exposed.
+- **Filterable**: Filter insights by `country`, `role`, and `level`.
+- **Metrics**: Average, Median (P50), Lower Quartile (P25), Upper Quartile (P75).
+- **Endpoint**: `GET /api/stats/summary?country=&role=&level=`
+
 ### 🛡️ Moderation
 - Users can moderate submissions directly from the **Salary Details** page.
 - Statuses: `PENDING` (Default), `APPROVED`, `REJECTED`.
@@ -90,9 +106,10 @@ npm run dev
 
 ## 💾 Administration via CLI
 To manually inspect data:
-1. Connect to Docker container: `docker exec -it <container_id> psql -U admin -d identity_db`
+1. Connect to Docker container: `docker exec -it identity_db psql -U admin -d identity_db`
 2. List tables: `\dt`
 3. View Salaries: `SELECT * FROM "SalarySubmissions";`
+4. View Approved Salaries: `SELECT * FROM "SalarySubmissions" WHERE "Status" = 'APPROVED';`
 
 ---
 
