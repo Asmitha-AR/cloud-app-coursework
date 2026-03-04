@@ -11,6 +11,7 @@ A minimalist, high-end platform for anonymous salary sharing, community verifica
 -   `/SalaryService.Api`: .NET 10 Web API for Salary Submissions and Stats (Port 5001).
 -   `/VoteService.Api`: .NET 10 Web API for Votes, Reports, and Approval Thresholds (Port 5002).
 -   `/StatsService.Api`: .NET 10 Web API for Aggregated Salary Insights (Port 5019).
+-   `/SearchService.Api`: .NET 10 Web API for Public Salary Search (Port 5020).
 -   `/web`: Next.js 15 Frontend with Tailwind CSS (Port 3000).
 -   `docker-compose.yml`: Infrastructure (PostgreSQL).
 
@@ -60,6 +61,13 @@ dotnet run
 ```
 - **Swagger**: `http://localhost:5019/swagger`
 
+**Search Service (Approved Salary Lookup)**
+```bash
+cd SearchService.Api
+dotnet run
+```
+- **Swagger**: `http://localhost:5020/swagger`
+
 ### 4. Frontend Setup
 Navigate to the web directory and start the dev server:
 ```bash
@@ -79,6 +87,7 @@ npm run dev
 | **Salary API** | .NET 10 | `5001` | Salary data & Moderation |
 | **Vote API** | .NET 10 | `5002` | Upvote/Downvote, Reports, Auto-Approval |
 | **Stats API** | .NET 10 | `5019` | Aggregated Salary Insights |
+| **Search API** | .NET 10 | `5020` | Filtered lookup over approved salaries |
 | **Frontend** | Next.js 15 | `3000` | User Interface |
 
 ---
@@ -96,6 +105,13 @@ npm run dev
 - **Filterable**: Filter insights by `country`, `role`, and `level`.
 - **Metrics**: Average, Median (P50), Lower Quartile (P25), Upper Quartile (P75).
 - **Endpoint**: `GET /api/stats/summary?country=&role=&level=`
+
+### 🔎 Salary Search (Search Service)
+- **Public Search**: No login required for browsing approved salaries.
+- **Privacy-Safe Output**: Anonymous records always return `company = "Anonymous"`.
+- **Filters**: `q`, `country`, `company`, `role`, `level`, `currency`, `period`, min/max experience and salary.
+- **Pagination & Sorting**: `page`, `pageSize`, `sortBy` (`submittedAt`, `salaryAmount`, `experienceYears`), `sortOrder` (`asc`, `desc`).
+- **Endpoint**: `GET /api/search/salaries?...`
 
 ### 🛡️ Moderation
 - Users can moderate submissions directly from the **Salary Details** page.

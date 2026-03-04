@@ -1,9 +1,10 @@
-import axios, { InternalAxiosRequestConfig } from 'axios';
+import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 const AUTH_URL = 'http://127.0.0.1:5100/api';
 const SALARY_URL = 'http://127.0.0.1:5001/api';
 const VOTE_URL = '/api/vote';
 const STATS_URL = 'http://127.0.0.1:5019/api';
+const SEARCH_URL = '/api/search';
 
 let accessToken: string | null = null;
 
@@ -24,15 +25,20 @@ const addAuthToken = (config: InternalAxiosRequestConfig) => {
 };
 
 // Shared response interceptor logic with retry
-const handleAuthError = async (error: any) => {
-  const originalRequest = error.config;
+const handleAuthError = async (error: unknown) => {
+  const axiosError = error as AxiosError;
+  const originalRequest = axiosError.config as (InternalAxiosRequestConfig & { _retry?: boolean }) | undefined;
+
+  if (!originalRequest) {
+    return Promise.reject(error);
+  }
 
   // Don't retry for login, signup, or refresh endpoints to avoid infinite loops
   const isAuthRequest = originalRequest.url?.includes('/auth/login') ||
     originalRequest.url?.includes('/auth/signup') ||
     originalRequest.url?.includes('/auth/refresh');
 
-  if (error.response?.status === 401 && !originalRequest._retry && !isAuthRequest) {
+  if (axiosError.response?.status === 401 && !originalRequest._retry && !isAuthRequest) {
     originalRequest._retry = true;
 
     try {
@@ -55,7 +61,7 @@ const handleAuthError = async (error: any) => {
     }
   }
 
-  return Promise.reject(error);
+  return Promise.reject(axiosError);
 };
 
 // Auth Service API
@@ -85,6 +91,12 @@ voteApi.interceptors.response.use((response) => response, handleAuthError);
 // Stats Service API - no login required
 export const statsApi = axios.create({
   baseURL: STATS_URL,
+  withCredentials: false,
+});
+
+// Search Service API - public approved-salary search
+export const searchApi = axios.create({
+  baseURL: SEARCH_URL,
   withCredentials: false,
 });
 

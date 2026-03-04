@@ -46,14 +46,26 @@ export default function LoginPage() {
             </div>
 
             <header className="relative z-10 px-6 md:px-10 py-6 flex items-center justify-between">
-                <Link href="/" className="flex items-center space-x-2">
+                <Link href="/search" className="flex items-center space-x-2">
                     <BrandLogo size={48} />
                 </Link>
-                <Link href="/salary/submit">
-                    <Button className="text-sm font-bold rounded-xl px-5 py-2.5 bg-slate-900 hover:bg-slate-800">
-                        Submit Salary Info
-                    </Button>
-                </Link>
+                <div className="flex items-center gap-2 rounded-2xl border border-slate-200/80 bg-white/70 p-1.5 backdrop-blur-sm shadow-sm">
+                    <Link href="/search">
+                        <Button variant="outline" className="text-sm font-semibold rounded-xl px-4 py-2.5 border-cyan-200 bg-cyan-50/80 text-cyan-900 hover:bg-cyan-100 hover:border-cyan-300">
+                            Public Search
+                        </Button>
+                    </Link>
+                    <Link href="/stats">
+                        <Button variant="outline" className="text-sm font-semibold rounded-xl px-4 py-2.5 border-indigo-200 bg-indigo-50/80 text-indigo-900 hover:bg-indigo-100 hover:border-indigo-300">
+                            Insights
+                        </Button>
+                    </Link>
+                    <Link href="/salary/submit">
+                        <Button className="text-sm font-semibold rounded-xl px-4 py-2.5 bg-slate-900 hover:bg-slate-800">
+                            Submit Salary Info
+                        </Button>
+                    </Link>
+                </div>
             </header>
 
             <main className="relative z-10 max-w-6xl mx-auto px-6 md:px-10 pb-10 min-h-[calc(100vh-88px)] flex items-center">
