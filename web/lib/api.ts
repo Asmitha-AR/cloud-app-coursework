@@ -3,6 +3,7 @@ import axios, { InternalAxiosRequestConfig } from 'axios';
 const AUTH_URL = 'http://127.0.0.1:5100/api';
 const SALARY_URL = 'http://127.0.0.1:5001/api';
 const VOTE_URL = '/api/vote';
+const STATS_URL = 'http://127.0.0.1:5019/api';
 
 let accessToken: string | null = null;
 
@@ -80,5 +81,11 @@ export const voteApi = axios.create({
 });
 voteApi.interceptors.request.use(addAuthToken, (error) => Promise.reject(error));
 voteApi.interceptors.response.use((response) => response, handleAuthError);
+
+// Stats Service API - no login required
+export const statsApi = axios.create({
+  baseURL: STATS_URL,
+  withCredentials: false,
+});
 
 export default salaryApi;
