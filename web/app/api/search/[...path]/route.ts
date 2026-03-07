@@ -8,7 +8,9 @@ async function proxy(request: NextRequest, params: { path?: string[] }) {
   targetUrl.search = request.nextUrl.search;
 
   const headers = new Headers();
+  const auth = request.headers.get('authorization');
   const contentType = request.headers.get('content-type');
+  if (auth) headers.set('authorization', auth);
   if (contentType) headers.set('content-type', contentType);
 
   const body = request.method === 'GET' || request.method === 'HEAD'

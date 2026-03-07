@@ -22,9 +22,17 @@ public class SearchController : ControllerBase
         var page = request.Page < 1 ? 1 : request.Page;
         var pageSize = request.PageSize < 1 ? 20 : Math.Min(request.PageSize, 100);
 
-        var query = _context.SalarySubmissions
-            .AsNoTracking()
-            .Where(s => s.Status == "APPROVED");
+        // Check if user is authenticated
+        var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+
+        var query = _context.SalarySubmissions.AsNoTracking();
+
+        // Anonymous users: Only show APPROVED salaries
+        // Authenticated users: Show ALL salaries (PENDING, APPROVED, REJECTED)
+        if (!isAuthenticated)
+        {
+            query = query.Where(s => s.Status == "APPROVED");
+        }
 
         if (!string.IsNullOrWhiteSpace(request.Q))
         {
