@@ -94,10 +94,12 @@ export const statsApi = axios.create({
   withCredentials: false,
 });
 
-// Search Service API - public approved-salary search
+// Search Service API - conditional auth (logged-in users see all, anonymous see approved only)
 export const searchApi = axios.create({
   baseURL: SEARCH_URL,
   withCredentials: false,
 });
+searchApi.interceptors.request.use(addAuthToken, (error) => Promise.reject(error));
+searchApi.interceptors.response.use((response) => response, handleAuthError);
 
 export default salaryApi;
