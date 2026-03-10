@@ -98,9 +98,6 @@ export default function SalariesPage() {
                             <Link href="/salary/submit">
                                 <Button className="text-sm font-bold bg-slate-900 hover:bg-slate-800 rounded-xl px-6 py-3">Submit Yours</Button>
                             </Link>
-                            <Button variant="outline" className="text-sm rounded-xl px-6 py-3" onClick={() => router.push('/search')}>
-                                Public Search
-                            </Button>
                             <Button variant="outline" className="text-sm rounded-xl px-6 py-3" onClick={() => router.push('/stats')}>
                                 View Insights
                             </Button>
