@@ -85,6 +85,42 @@ export default function SearchPage() {
     fetchResults(1);
   };
 
+  const clearFilters = () => {
+    const clearedFilters = {
+      q: '',
+      country: '',
+      company: '',
+      role: '',
+      level: '',
+      minSalaryAmount: '',
+      maxSalaryAmount: ''
+    };
+    setFilters(clearedFilters);
+    
+    // Fetch results with cleared filters immediately
+    setLoading(true);
+    setError('');
+
+    const params = new URLSearchParams();
+    params.append('page', '1');
+    params.append('pageSize', '12');
+    params.append('sortBy', 'submittedAt');
+    params.append('sortOrder', 'desc');
+
+    searchApi.get<SearchResponse>(`/search/salaries?${params.toString()}`)
+      .then(response => {
+        setResult(response.data);
+        setPage(1);
+      })
+      .catch(() => {
+        setResult(null);
+        setError('Failed to search salaries. Please try again.');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
   const canPrev = (result?.page ?? 1) > 1;
   const canNext = (result?.page ?? 1) < (result?.totalPages ?? 0);
 
@@ -125,8 +161,20 @@ export default function SearchPage() {
             <Input label="Min Salary" type="number" placeholder="0" value={filters.minSalaryAmount} onChange={(e) => setFilters(prev => ({ ...prev, minSalaryAmount: e.target.value }))} />
             <Input label="Max Salary" type="number" placeholder="200000" value={filters.maxSalaryAmount} onChange={(e) => setFilters(prev => ({ ...prev, maxSalaryAmount: e.target.value }))} />
           </div>
-          <div className="flex justify-end">
-            <Button className="rounded-xl bg-slate-900 hover:bg-slate-800" onClick={applyFilters}>Apply Filters</Button>
+          <div className="flex justify-between items-center gap-4">
+            <Button 
+              variant="ghost" 
+              className="rounded-xl text-slate-600"
+              onClick={clearFilters}
+            >
+              Clear Filters
+            </Button>
+            <Button 
+              className="rounded-xl bg-slate-900 hover:bg-slate-800" 
+              onClick={applyFilters}
+            >
+              Apply Filters
+            </Button>
           </div>
         </section>
 
