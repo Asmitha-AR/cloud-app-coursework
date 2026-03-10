@@ -111,8 +111,8 @@ export default function SearchPage() {
       <main className="relative z-10 flex-1 max-w-6xl mx-auto w-full p-6 lg:p-10 xl:p-12 space-y-6 animate-in fade-in duration-500">
         <section className="rounded-3xl border border-slate-200/80 bg-white/80 backdrop-blur-sm p-6 lg:p-8 shadow-sm shadow-slate-900/5 space-y-3">
           <p className="text-xs font-bold uppercase tracking-[0.24em] text-cyan-700">Public Lookup</p>
-          <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-slate-900">Approved Salary Search</h1>
-          <p className="text-slate-600 text-base lg:text-lg">Search only community-approved salary submissions. Anonymous entries are masked automatically.</p>
+          <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-slate-900">Salary Search</h1>
+          <p className="text-slate-600 text-base lg:text-lg">Search community salary submissions. Logged-in users see all statuses; anonymous users see approved entries only.</p>
         </section>
 
         <section className="bg-white/90 border border-slate-200/80 p-6 rounded-3xl shadow-sm shadow-slate-900/5 space-y-4">
@@ -139,7 +139,7 @@ export default function SearchPage() {
         <section className="bg-white/90 border border-slate-200/80 rounded-3xl overflow-hidden shadow-sm shadow-slate-900/5">
           <div className="px-6 py-4 border-b border-slate-200/80 flex items-center justify-between">
             <p className="text-sm font-semibold text-slate-700">
-              {loading ? 'Loading results...' : `${result?.totalCount ?? 0} approved records found`}
+              {loading ? 'Loading results...' : `${result?.totalCount ?? 0} record${result?.totalCount !== 1 ? 's' : ''} found`}
             </p>
             {result && result.totalPages > 0 && (
               <p className="text-xs text-slate-500">Page {result.page} of {result.totalPages}</p>
@@ -160,6 +160,7 @@ export default function SearchPage() {
                     <th className="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-[0.18em]">Location</th>
                     <th className="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-[0.18em]">Experience</th>
                     <th className="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-[0.18em]">Salary</th>
+                    <th className="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-[0.18em]">Status</th>
                     <th className="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-[0.18em]">Submitted</th>
                   </tr>
                 </thead>
@@ -177,6 +178,17 @@ export default function SearchPage() {
                         {new Intl.NumberFormat('en-US', { style: 'currency', currency: item.currency, maximumFractionDigits: 0 }).format(item.salaryAmount)}
                         <span className="text-[10px] text-slate-400 font-bold uppercase ml-1">/ {item.period.replace('ly', '')}</span>
                       </td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide ${
+                          item.status === 'APPROVED' 
+                            ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' 
+                            : item.status === 'PENDING' 
+                            ? 'bg-amber-100 text-amber-700 border border-amber-200' 
+                            : 'bg-red-100 text-red-700 border border-red-200'
+                        }`}>
+                          {item.status}
+                        </span>
+                      </td>
                       <td className="px-6 py-4 text-sm text-slate-600">{new Date(item.submittedAt).toLocaleDateString()}</td>
                     </tr>
                   ))}
@@ -184,7 +196,7 @@ export default function SearchPage() {
               </table>
             </div>
           ) : (
-            <div className="p-14 text-center text-slate-600 font-medium">No approved salaries found for current filters.</div>
+            <div className="p-14 text-center text-slate-600 font-medium">No salaries found for current filters.</div>
           )}
 
           {!loading && result && result.totalPages > 1 && (
