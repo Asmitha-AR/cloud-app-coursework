@@ -1,0 +1,42 @@
+# identity.yaml
+# Deploy the identityservice API and expose it inside the cluster
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identityservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: identityservice
+  template:
+    metadata:
+      labels:
+        app: identityservice
+    spec:
+      containers:
+        - name: identityservice
+          image: kithusshand/identityservice
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_HOST
+              value: postgres
+            - name: DB_USER
+              value: admin
+            - name: DB_PASSWORD
+              value: password123
+            - name: DB_NAME
+              value: mydb
+---
+# Expose identityservice as a ClusterIP service
+apiVersion: v1
+kind: Service
+metadata:
+  name: identityservice
+spec:
+  selector:
+    app: identityservice
+  ports:
+    - port: 80
+      targetPort: 8080
