@@ -1,0 +1,22 @@
+# salary.yaml
+# This is a Job because the container runs once and exits
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: salaryservice
+spec:
+  template:
+    spec:
+      containers:
+        - name: salaryservice
+          image: kithusshand/salaryservice
+          env:
+            - name: DB_HOST
+              value: postgres
+            - name: DB_USER
+              value: admin
+            - name: DB_PASSWORD
+              value: password123
+            - name: DB_NAME
+              value: mydb
+      restartPolicy: Never
