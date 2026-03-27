@@ -1,6 +1,3 @@
-# identity.yaml
-# Deploy the identityservice API and expose it to the internet
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -19,15 +16,12 @@ spec:
         - name: identityservice
           image: kithusshand/identityservice
           ports:
-            - containerPort: 8080
+            - containerPort: 5100
           env:
-            # 👇 IMPORTANT FIX (allow external access)
             - name: ASPNETCORE_URLS
-              value: http://+:8080
-
-            # Database config
+              value: http://+:5100
             - name: DB_HOST
-              value: postgres
+              value: postgres.default.svc.cluster.local
             - name: DB_USER
               value: admin
             - name: DB_PASSWORD
@@ -36,7 +30,6 @@ spec:
               value: mydb
 
 ---
-# Expose identityservice to the internet using LoadBalancer
 apiVersion: v1
 kind: Service
 metadata:
@@ -47,4 +40,4 @@ spec:
     app: identityservice
   ports:
     - port: 80
-      targetPort: 8080
+      targetPort: 5100
