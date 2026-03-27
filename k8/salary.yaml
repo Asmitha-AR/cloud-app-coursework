@@ -1,5 +1,6 @@
 # salary.yaml
 # This is a Job because the container runs once and exits
+
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -12,7 +13,7 @@ spec:
           image: kithusshand/salaryservice
           env:
             - name: DB_HOST
-              value: postgres
+              value: postgres.default.svc.cluster.local   # 👈 FIXED
             - name: DB_USER
               value: admin
             - name: DB_PASSWORD
