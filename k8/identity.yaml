@@ -1,5 +1,6 @@
 # identity.yaml
-# Deploy the identityservice API and expose it inside the cluster
+# Deploy the identityservice API and expose it to the internet
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -28,13 +29,15 @@ spec:
               value: password123
             - name: DB_NAME
               value: mydb
+
 ---
-# Expose identityservice as a ClusterIP service
+# Expose identityservice to the internet using LoadBalancer
 apiVersion: v1
 kind: Service
 metadata:
   name: identityservice
 spec:
+  type: LoadBalancer   # 👈 IMPORTANT CHANGE
   selector:
     app: identityservice
   ports:
