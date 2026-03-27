@@ -23,4 +23,4 @@ spec:
 
             # 🔥 THIS IS THE REAL FIX
             - name: ConnectionStrings__DefaultConnection
-              value: Host=postgres;Port=5432;Database=identity_db;Username=admin;Password=password123
+              value: Host=postgres;Port=5432;Database=paymentappdb;Username=admin;Password=password123
