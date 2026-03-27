@@ -21,6 +21,11 @@ spec:
           ports:
             - containerPort: 8080
           env:
+            # 👇 IMPORTANT FIX (allow external access)
+            - name: ASPNETCORE_URLS
+              value: http://+:8080
+
+            # Database config
             - name: DB_HOST
               value: postgres
             - name: DB_USER
@@ -37,7 +42,7 @@ kind: Service
 metadata:
   name: identityservice
 spec:
-  type: LoadBalancer   # 👈 IMPORTANT CHANGE
+  type: LoadBalancer
   selector:
     app: identityservice
   ports:
