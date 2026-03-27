@@ -20,24 +20,7 @@ spec:
           env:
             - name: ASPNETCORE_URLS
               value: http://+:5100
-            - name: DB_HOST
-              value: postgres.default.svc.cluster.local
-            - name: DB_USER
-              value: admin
-            - name: DB_PASSWORD
-              value: password123
-            - name: DB_NAME
-              value: mydb
 
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: identityservice
-spec:
-  type: LoadBalancer
-  selector:
-    app: identityservice
-  ports:
-    - port: 80
-      targetPort: 5100
+            # 🔥 THIS IS THE REAL FIX
+            - name: ConnectionStrings__DefaultConnection
+              value: Host=postgres;Port=5432;Database=identity_db;Username=admin;Password=password123
