@@ -1,9 +1,9 @@
 # postgres.yaml
-# Deploy a PostgreSQL database for your app
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres
+  namespace: data
 spec:
   replicas: 1
   selector:
@@ -21,17 +21,17 @@ spec:
             - containerPort: 5432
           env:
             - name: POSTGRES_DB
-              value: paymentappdb
+              value: identity_db
             - name: POSTGRES_USER
               value: admin
             - name: POSTGRES_PASSWORD
               value: password123
 ---
-# Expose PostgreSQL as a service inside the cluster
 apiVersion: v1
 kind: Service
 metadata:
   name: postgres
+  namespace: data
 spec:
   selector:
     app: postgres
