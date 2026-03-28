@@ -11,4 +11,5 @@ public class SalaryDbContext : DbContext
     }
 
     public DbSet<SalarySubmission> SalarySubmissions { get; set; }
+    public DbSet<User> Users { get; set; }
 }
