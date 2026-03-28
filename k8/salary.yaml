@@ -1,24 +1,16 @@
-# salary.yaml
-apiVersion: apps/v1
-kind: Deployment
+# salary.yaml (FINAL CORRECT VERSION)
+
+apiVersion: batch/v1
+kind: Job
 metadata:
   name: salaryservice
   namespace: app
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: salaryservice
   template:
-    metadata:
-      labels:
-        app: salaryservice
     spec:
       containers:
         - name: salaryservice
           image: kithusshand/salaryservice
-          ports:
-            - containerPort: 8080
           env:
             - name: DB_HOST
               value: postgres.data.svc.cluster.local
@@ -27,17 +19,5 @@ spec:
             - name: DB_PASSWORD
               value: password123
             - name: DB_NAME
-              value: salary_db
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: salaryservice
-  namespace: app
-spec:
-  selector:
-    app: salaryservice
-  ports:
-    - port: 80
-      targetPort: 8080
-  type: ClusterIP
+              value: paymentappdb
+      restartPolicy: Never
