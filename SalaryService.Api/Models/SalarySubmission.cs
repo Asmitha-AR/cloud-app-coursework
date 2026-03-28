@@ -1,8 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace IdentityService.Api.Models;
+namespace SalaryService.Api.Models;
 
 [Table("SalarySubmissions")]
 public class SalarySubmission
@@ -20,7 +19,7 @@ public class SalarySubmission
 
     public int ExperienceYears { get; set; }
 
-    public string Level { get; set; } = string.Empty; // e.g. Junior, Senior, Staff
+    public string Level { get; set; } = string.Empty;
 
     [Required]
     public decimal SalaryAmount { get; set; }
@@ -29,13 +28,11 @@ public class SalarySubmission
     public string Currency { get; set; } = "USD";
 
     [Required]
-    public string Period { get; set; } = "Yearly"; // Monthly, Yearly
+    public string Period { get; set; } = "Yearly";
 
     public bool IsAnonymous { get; set; } = true;
 
-    public string Status { get; set; } = "PENDING"; // PENDING, APPROVED, REJECTED
-
-    public string? UserEmail { get; set; } // Optional: Email of the submitter
+    public string Status { get; set; } = "PENDING";
 
     public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
 }
