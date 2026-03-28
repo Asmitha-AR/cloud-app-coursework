@@ -1,23 +1,28 @@
-# salary.yaml
-# This is a Job because the container runs once and exits
+# salary.yaml (Deployment version for testing)
 
-apiVersion: batch/v1
-kind: Job
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: salaryservice
 spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: salaryservice
   template:
+    metadata:
+      labels:
+        app: salaryservice
     spec:
       containers:
         - name: salaryservice
           image: kithusshand/salaryservice
           env:
             - name: DB_HOST
-              value: postgres.default.svc.cluster.local   # 👈 FIXED
+              value: postgres.default.svc.cluster.local
             - name: DB_USER
               value: admin
             - name: DB_PASSWORD
               value: password123
             - name: DB_NAME
-              value: mydb
-      restartPolicy: Never
+              value: paymentappdb   # ✅ must match postgres
