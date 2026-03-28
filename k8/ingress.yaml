@@ -3,10 +3,6 @@ kind: Ingress
 metadata:
   name: app-ingress
   namespace: app
-  annotations:
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      rewrite ^/api/Auth(.*)$ /api/auth$1 last;
-      rewrite ^/api/Salary(.*)$ /api/salary$1 last;
 spec:
   ingressClassName: nginx
   rules:
