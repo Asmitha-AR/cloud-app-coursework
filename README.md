@@ -93,7 +93,7 @@ VOTE_API_BASE_URL=http://127.0.0.1:5002/api
 SEARCH_API_BASE_URL=http://127.0.0.1:5020/api
 ```
 
-For containerized deployment, set the server-side proxy values to internal service names, for example:
+For containerized deployment, use `web/.env.docker.example` or set the server-side proxy values to internal service names, for example:
 ```bash
 VOTE_API_BASE_URL=http://vote-service:5002/api
 SEARCH_API_BASE_URL=http://search-service:5020/api
