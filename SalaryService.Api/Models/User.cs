@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace IdentityService.Api.Models;
+namespace SalaryService.Api.Models;
 
+[Table("Users")]
 public class User
 {
     public Guid Id { get; set; } = Guid.NewGuid();
@@ -12,6 +14,8 @@ public class User
 
     [Required]
     public string PasswordHash { get; set; } = string.Empty;
+
+    public string? Username { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
