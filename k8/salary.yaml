@@ -1,6 +1,4 @@
 # salary.yaml
-# Salary Service as a Deployment (API runs continuously)
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -30,9 +28,7 @@ spec:
               value: password123
             - name: DB_NAME
               value: paymentappdb
-
 ---
-# Expose Salary Service inside cluster
 apiVersion: v1
 kind: Service
 metadata:
@@ -44,3 +40,4 @@ spec:
   ports:
     - port: 80
       targetPort: 8080
+  type: LoadBalancer
