@@ -3,22 +3,20 @@ kind: Ingress
 metadata:
   name: app-ingress
   namespace: app
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   ingressClassName: nginx
   rules:
     - http:
         paths:
-          - path: /api/auth(/|$)(.*)
-            pathType: ImplementationSpecific
+          - path: /api/auth
+            pathType: Prefix
             backend:
               service:
                 name: identityservice
                 port:
                   number: 80
-          - path: /api/salary(/|$)(.*)
-            pathType: ImplementationSpecific
+          - path: /api/salary
+            pathType: Prefix
             backend:
               service:
                 name: salaryservice
