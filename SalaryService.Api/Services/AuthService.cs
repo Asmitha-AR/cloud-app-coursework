@@ -1,13 +1,16 @@
-using IdentityService.Api.Data;
-using IdentityService.Api.DTOs;
-using IdentityService.Api.Models;
+using SalaryService.Api.Data;
+using SalaryService.Api.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace IdentityService.Api.Services;
+namespace SalaryService.Api.Services;
+
+public record RegisterRequest(string Email, string Password);
+public record LoginRequest(string Email, string Password);
+public record AuthResponse(string Token, string Email);
 
 public interface IAuthService
 {
@@ -17,10 +20,10 @@ public interface IAuthService
 
 public class AuthService : IAuthService
 {
-    private readonly AppDbContext _context;
+    private readonly SalaryDbContext _context;
     private readonly IConfiguration _configuration;
 
-    public AuthService(AppDbContext context, IConfiguration configuration)
+    public AuthService(SalaryDbContext context, IConfiguration configuration)
     {
         _context = context;
         _configuration = configuration;
@@ -29,9 +32,7 @@ public class AuthService : IAuthService
     public async Task<AuthResponse> RegisterAsync(RegisterRequest request)
     {
         if (await _context.Users.AnyAsync(u => u.Email == request.Email))
-        {
             throw new Exception("User already exists.");
-        }
 
         var user = new User
         {
@@ -49,9 +50,7 @@ public class AuthService : IAuthService
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
         if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
-        {
             throw new Exception("Invalid credentials.");
-        }
 
         return GenerateToken(user);
     }
@@ -70,7 +69,9 @@ public class AuthService : IAuthService
                 new Claim("id", user.Id.ToString())
             }),
             Expires = DateTime.UtcNow.AddMinutes(int.Parse(jwtSettings["ExpirationMinutes"]!)),
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
+            SigningCredentials = new SigningCredentials(
+                new SymmetricSecurityKey(key),
+                SecurityAlgorithms.HmacSha256Signature),
             Issuer = jwtSettings["Issuer"],
             Audience = jwtSettings["Audience"]
         };
