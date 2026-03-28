@@ -1,23 +1,43 @@
 # salary.yaml
-# This is a Job because the container runs once and exits
-
-apiVersion: batch/v1
-kind: Job
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: salaryservice
+  namespace: app
 spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: salaryservice
   template:
+    metadata:
+      labels:
+        app: salaryservice
     spec:
       containers:
         - name: salaryservice
           image: kithusshand/salaryservice
+          ports:
+            - containerPort: 8080
           env:
             - name: DB_HOST
-              value: postgres.default.svc.cluster.local
+              value: postgres.data.svc.cluster.local
             - name: DB_USER
               value: admin
             - name: DB_PASSWORD
               value: password123
             - name: DB_NAME
-              value: paymentappdb   # ✅ FIXED
-      restartPolicy: Never
+              value: salary_db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: salaryservice
+  namespace: app
+spec:
+  selector:
+    app: salaryservice
+  ports:
+    - port: 80
+      targetPort: 8080
+  type: ClusterIP
