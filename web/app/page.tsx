@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Button from '@/components/ui/Button';
 import { useAuth } from '@/context/AuthContext';
@@ -8,6 +8,20 @@ import { Toast } from '@/components/ui/Toast';
 import BrandLogo from '@/components/BrandLogo';
 
 export default function Home() {
+  return (
+    <Suspense
+      fallback={(
+        <div className="min-h-screen bg-white flex items-center justify-center">
+          <div className="w-6 h-6 border-2 border-zinc-200 border-t-black rounded-full animate-spin" />
+        </div>
+      )}
+    >
+      <HomeContent />
+    </Suspense>
+  );
+}
+
+function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isAuthenticated, logout, isLoading } = useAuth();

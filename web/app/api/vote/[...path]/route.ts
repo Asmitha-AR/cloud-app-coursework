@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const VOTE_API_BASE = 'http://127.0.0.1:5002/api';
+const VOTE_API_BASE = process.env.VOTE_API_BASE_URL ?? 'http://127.0.0.1:5002/api';
 
 async function proxy(request: NextRequest, params: { path?: string[] }) {
   const path = (params.path ?? []).join('/');

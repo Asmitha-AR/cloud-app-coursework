@@ -1,10 +1,10 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
-const AUTH_URL = 'http://127.0.0.1:5100/api';
-const SALARY_URL = 'http://127.0.0.1:5001/api';
-const VOTE_URL = '/api/vote';
-const STATS_URL = 'http://127.0.0.1:5019/api';
-const SEARCH_URL = '/api/search';
+const AUTH_URL = process.env.NEXT_PUBLIC_AUTH_API_URL ?? 'http://127.0.0.1:5100/api';
+const SALARY_URL = process.env.NEXT_PUBLIC_SALARY_API_URL ?? 'http://127.0.0.1:5001/api';
+const VOTE_URL = process.env.NEXT_PUBLIC_VOTE_API_PROXY_PATH ?? '/api/vote';
+const STATS_URL = process.env.NEXT_PUBLIC_STATS_API_URL ?? 'http://127.0.0.1:5019/api';
+const SEARCH_URL = process.env.NEXT_PUBLIC_SEARCH_API_PROXY_PATH ?? '/api/search';
 
 let accessToken: string | null = null;
 

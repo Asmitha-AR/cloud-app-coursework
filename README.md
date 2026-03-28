@@ -73,9 +73,31 @@ Navigate to the web directory and start the dev server:
 ```bash
 cd web
 npm install
+cp .env.example .env.local
 npm run dev
 ```
 - **App URL**: `http://localhost:3000`
+- Update `web/.env.local` with your local or deployed API URLs before starting the app.
+
+### 5. Frontend Environment Variables
+The frontend now uses a separate environment file so local development and deployment can use different endpoints.
+
+Example local values:
+```bash
+NEXT_PUBLIC_AUTH_API_URL=http://localhost:5100/api
+NEXT_PUBLIC_SALARY_API_URL=http://localhost:5001/api
+NEXT_PUBLIC_STATS_API_URL=http://localhost:5019/api
+NEXT_PUBLIC_VOTE_API_PROXY_PATH=/api/vote
+NEXT_PUBLIC_SEARCH_API_PROXY_PATH=/api/search
+VOTE_API_BASE_URL=http://127.0.0.1:5002/api
+SEARCH_API_BASE_URL=http://127.0.0.1:5020/api
+```
+
+For containerized deployment, set the server-side proxy values to internal service names, for example:
+```bash
+VOTE_API_BASE_URL=http://vote-service:5002/api
+SEARCH_API_BASE_URL=http://search-service:5020/api
+```
 
 ---
 
