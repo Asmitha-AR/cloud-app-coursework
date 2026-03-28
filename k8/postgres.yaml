@@ -1,4 +1,13 @@
-# postgres.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init
+  namespace: data
+data:
+  init.sql: |
+    CREATE DATABASE identity_db;
+    CREATE DATABASE paymentappdb;
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,12 +29,19 @@ spec:
           ports:
             - containerPort: 5432
           env:
-            - name: POSTGRES_DB
-              value: identity_db
             - name: POSTGRES_USER
               value: admin
             - name: POSTGRES_PASSWORD
               value: password123
+            - name: POSTGRES_DB
+              value: postgres   # default admin db, our DBs are created by init script
+          volumeMounts:
+            - name: init-script
+              mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: init-script
+          configMap:
+            name: postgres-init
 ---
 apiVersion: v1
 kind: Service
