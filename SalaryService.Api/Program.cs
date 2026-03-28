@@ -1,5 +1,4 @@
-using IdentityService.Api.Data;
-using IdentityService.Api.Services;
+using SalaryService.Api.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -8,7 +7,8 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.UseUrls("http://0.0.0.0:5001");
+// ✅ FIX 1: Port matches Kubernetes containerPort (8080)
+builder.WebHost.UseUrls("http://0.0.0.0:8080");
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -51,14 +51,18 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// Database
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+// ✅ FIX 2: Read DB connection from Kubernetes env vars (with fallback for local dev)
+var dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost";
+var dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? "admin";
+var dbPass = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "password";
+var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "salarydb";
+var connStr = $"Host={dbHost};Database={dbName};Username={dbUser};Password={dbPass}";
 
-// Identity Services
-builder.Services.AddScoped<IAuthService, AuthService>();
+// ✅ FIX 3: Use SalaryDbContext (not AppDbContext from IdentityService)
+builder.Services.AddDbContext<SalaryDbContext>(options =>
+    options.UseNpgsql(connStr));
 
-// Authentication
+// Authentication (JWT — validates tokens issued by IdentityService)
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var key = Encoding.ASCII.GetBytes(jwtSettings["SecretKey"]!);
 
@@ -80,16 +84,10 @@ builder.Services.AddAuthentication(x =>
     };
 });
 
-// Method for manual DI in services if needed, but not used here.
-
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-// Configure the HTTP request pipeline.
 app.UseSwagger();
 app.UseSwaggerUI();
-
-// app.UseHttpsRedirection();
 
 // CORS for Next.js (must specify origin when using credentials)
 app.UseCors("frontend");
@@ -97,29 +95,13 @@ app.UseCors("frontend");
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Ensure DB is created (Migration alternative for MVP)
+// Ensure DB table exists (MVP alternative to migrations)
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    // Wait for DB to be ready in Docker
-    try 
+    var dbContext = scope.ServiceProvider.GetRequiredService<SalaryDbContext>();
+    try
     {
-        // For shared DB in MVP, EnsureCreated only works if the DB is empty.
-        // We manually ensure ALL specific tables exist to avoid partial init issues.
         var sql = @"
-            CREATE TABLE IF NOT EXISTS ""Users"" (
-                ""Id"" uuid NOT NULL CONSTRAINT ""PK_Users"" PRIMARY KEY,
-                ""Email"" text NOT NULL,
-                ""PasswordHash"" text NOT NULL,
-                ""Username"" text,
-                ""CreatedAt"" timestamp with time zone NOT NULL
-            );
-
-            -- Ensure Username is NULLABLE 
-            ALTER TABLE ""Users"" ALTER COLUMN ""Username"" DROP NOT NULL;
-
-            CREATE UNIQUE INDEX IF NOT EXISTS ""IX_Users_Email"" ON ""Users"" (""Email"");
-
             CREATE TABLE IF NOT EXISTS ""SalarySubmissions"" (
                 ""Id"" uuid NOT NULL CONSTRAINT ""PK_SalarySubmissions"" PRIMARY KEY,
                 ""Country"" text NOT NULL,
@@ -135,12 +117,13 @@ using (var scope = app.Services.CreateScope())
                 ""UserEmail"" text,
                 ""SubmittedAt"" timestamp with time zone NOT NULL
             );";
-            
+
         dbContext.Database.ExecuteSqlRaw(sql);
+        Console.WriteLine("✅ DB initialized successfully.");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"DB Initialization failed: {ex.Message}");
+        Console.WriteLine($"❌ DB Initialization failed: {ex.Message}");
     }
 }
 
@@ -150,7 +133,7 @@ app.Lifetime.ApplicationStarted.Register(() =>
 {
     Console.WriteLine("\n----------------------------------------------------------------");
     Console.WriteLine("   🚀 KITHU Salary Service is running!");
-    Console.WriteLine("   📄 Swagger UI: http://localhost:5001/swagger");
+    Console.WriteLine("   📄 Swagger UI: http://localhost:8080/swagger");
     Console.WriteLine("----------------------------------------------------------------\n");
 });
 
