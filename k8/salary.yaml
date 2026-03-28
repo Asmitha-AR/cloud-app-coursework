@@ -1,18 +1,12 @@
-# salary.yaml (Deployment version for testing)
+# salary.yaml
+# This is a Job because the container runs once and exits
 
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1
+kind: Job
 metadata:
   name: salaryservice
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: salaryservice
   template:
-    metadata:
-      labels:
-        app: salaryservice
     spec:
       containers:
         - name: salaryservice
@@ -25,4 +19,5 @@ spec:
             - name: DB_PASSWORD
               value: password123
             - name: DB_NAME
-              value: paymentappdb   # ✅ must match postgres
+              value: paymentappdb   # ✅ FIXED
+      restartPolicy: Never
