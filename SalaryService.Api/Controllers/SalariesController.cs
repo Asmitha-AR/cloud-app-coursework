@@ -1,24 +1,22 @@
-using IdentityService.Api.Data;
-using IdentityService.Api.Models;
+using SalaryService.Api.Data;
+using SalaryService.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
 
-namespace IdentityService.Api.Controllers;
+namespace SalaryService.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/salary")]
 public class SalariesController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly SalaryDbContext _context;
 
-    public SalariesController(AppDbContext context)
+    public SalariesController(SalaryDbContext context)
     {
         _context = context;
     }
 
     [HttpGet]
-    [Authorize]
     public async Task<IActionResult> GetAll()
     {
         var salaries = await _context.SalarySubmissions
@@ -31,11 +29,8 @@ public class SalariesController : ControllerBase
     public async Task<IActionResult> Submit([FromBody] SalarySubmission submission)
     {
         if (!ModelState.IsValid)
-        {
             return BadRequest(ModelState);
-        }
 
-        // Force status to PENDING regardless of what the user sends
         submission.Status = "PENDING";
         submission.SubmittedAt = DateTime.UtcNow;
 
@@ -51,24 +46,6 @@ public class SalariesController : ControllerBase
         var salary = await _context.SalarySubmissions.FindAsync(id);
         if (salary == null) return NotFound();
 
-        // Respect anonymity
-        var response = new
-        {
-            salary.Id,
-            salary.Country,
-            Company = salary.IsAnonymous ? "Anonymous" : salary.Company,
-            salary.Role,
-            salary.Level,
-            salary.ExperienceYears,
-            salary.SalaryAmount,
-            salary.Currency,
-            salary.Period,
-            salary.IsAnonymous,
-            salary.Status,
-            salary.SubmittedAt
-        };
-
-        return Ok(response);
+        return Ok(salary);
     }
-
 }
