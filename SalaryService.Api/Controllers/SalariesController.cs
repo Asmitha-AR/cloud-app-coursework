@@ -1,7 +1,7 @@
-using SalaryService.Api.Data;
-using SalaryService.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SalaryService.Api.Data;
+using SalaryService.Api.Models;
 
 namespace SalaryService.Api.Controllers;
 
@@ -22,6 +22,7 @@ public class SalariesController : ControllerBase
         var salaries = await _context.SalarySubmissions
             .OrderByDescending(s => s.SubmittedAt)
             .ToListAsync();
+
         return Ok(salaries);
     }
 
@@ -44,8 +45,26 @@ public class SalariesController : ControllerBase
     public async Task<IActionResult> GetById(Guid id)
     {
         var salary = await _context.SalarySubmissions.FindAsync(id);
-        if (salary == null) return NotFound();
 
-        return Ok(salary);
+        if (salary == null)
+            return NotFound();
+
+        var response = new
+        {
+            salary.Id,
+            salary.Country,
+            Company = salary.IsAnonymous ? "Anonymous" : salary.Company,
+            salary.Role,
+            salary.Level,
+            salary.ExperienceYears,
+            salary.SalaryAmount,
+            salary.Currency,
+            salary.Period,
+            salary.IsAnonymous,
+            salary.Status,
+            salary.SubmittedAt
+        };
+
+        return Ok(response);
     }
 }
