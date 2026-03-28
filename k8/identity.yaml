@@ -1,7 +1,9 @@
+# identity.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: identityservice
+  namespace: app
 spec:
   replicas: 1
   selector:
@@ -16,11 +18,26 @@ spec:
         - name: identityservice
           image: kithusshand/identityservice
           ports:
-            - containerPort: 5100
+            - containerPort: 8080
           env:
-            - name: ASPNETCORE_URLS
-              value: http://+:5100
-
-            # 🔥 THIS IS THE REAL FIX
-            - name: ConnectionStrings__DefaultConnection
-              value: Host=postgres;Port=5432;Database=paymentappdb;Username=admin;Password=password123
+            - name: DB_HOST
+              value: postgres.data.svc.cluster.local
+            - name: DB_USER
+              value: admin
+            - name: DB_PASSWORD
+              value: password123
+            - name: DB_NAME
+              value: identity_db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: identityservice
+  namespace: app
+spec:
+  selector:
+    app: identityservice
+  ports:
+    - port: 80
+      targetPort: 8080
+  type: ClusterIP
