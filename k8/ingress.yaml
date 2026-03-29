@@ -22,14 +22,14 @@ spec:
                 name: identityservice
                 port:
                   number: 80
-          - path: /api/salary
+          - path: /api/salaries
             pathType: Prefix
             backend:
               service:
                 name: salaryservice
                 port:
                   number: 80
-          - path: /api/salaries
+          - path: /api/Salaries
             pathType: Prefix
             backend:
               service:
