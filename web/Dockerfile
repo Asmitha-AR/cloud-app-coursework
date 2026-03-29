@@ -21,7 +21,7 @@ ENV NEXT_PUBLIC_SEARCH_API_PROXY_PATH=$NEXT_PUBLIC_SEARCH_API_PROXY_PATH
 
 RUN npm run build
 
-# Runtime stage
+# Runtime stage test
 FROM node:20-alpine AS final
 WORKDIR /app
 ENV NODE_ENV=production
