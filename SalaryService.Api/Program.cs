@@ -85,15 +85,14 @@ builder.Services.AddAuthentication(x =>
 
 var app = builder.Build();
 
-// ✅ Swagger configured to work behind /api/salary ingress path
 app.UseSwagger(c =>
 {
-    c.RouteTemplate = "api/salary/swagger/{documentName}/swagger.json";
+    c.RouteTemplate = "api/salaries/swagger/{documentName}/swagger.json";
 });
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("/api/salary/swagger/v1/swagger.json", "Salary API v1");
-    c.RoutePrefix = "api/salary/swagger";
+    c.SwaggerEndpoint("/api/salaries/swagger/v1/swagger.json", "Salary API v1");
+    c.RoutePrefix = "api/salaries/swagger";
 });
 
 app.UseCors("frontend");
