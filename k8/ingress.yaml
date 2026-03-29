@@ -29,7 +29,7 @@ spec:
                 name: salaryservice
                 port:
                   number: 80
-          - path: /api/Salary
+          - path: /api/salaries
             pathType: Prefix
             backend:
               service:
