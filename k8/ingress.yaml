@@ -36,3 +36,10 @@ spec:
                 name: salaryservice
                 port:
                   number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80
