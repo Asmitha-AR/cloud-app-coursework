@@ -6,7 +6,7 @@ using SalaryService.Api.Models;
 namespace SalaryService.Api.Controllers;
 
 [ApiController]
-[Route("api/salary")]
+[Route("api/salaries")]
 public class SalariesController : ControllerBase
 {
     private readonly SalaryDbContext _context;
