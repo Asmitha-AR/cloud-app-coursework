@@ -7,10 +7,8 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ✅ FIX 1: Port matches Kubernetes containerPort (8080)
 builder.WebHost.UseUrls("http://0.0.0.0:8080");
 
-// Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCors(options =>
@@ -18,7 +16,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy("frontend", policy =>
     {
         policy
-            .WithOrigins("http://localhost:3000")
+            .WithOrigins(
+                "http://localhost:3000",
+                "http://74.224.97.56"
+            )
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials();
@@ -51,18 +52,16 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// ✅ FIX 2: Read DB connection from Kubernetes env vars (with fallback for local dev)
+// Read DB connection from Kubernetes env vars
 var dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost";
 var dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? "admin";
 var dbPass = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "password";
 var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "salarydb";
 var connStr = $"Host={dbHost};Database={dbName};Username={dbUser};Password={dbPass}";
 
-// ✅ FIX 3: Use SalaryDbContext (not AppDbContext from IdentityService)
 builder.Services.AddDbContext<SalaryDbContext>(options =>
     options.UseNpgsql(connStr));
 
-// Authentication (JWT — validates tokens issued by IdentityService)
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var key = Encoding.ASCII.GetBytes(jwtSettings["SecretKey"]!);
 
@@ -86,16 +85,21 @@ builder.Services.AddAuthentication(x =>
 
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI();
+// ✅ Swagger configured to work behind /api/salary ingress path
+app.UseSwagger(c =>
+{
+    c.RouteTemplate = "api/salary/swagger/{documentName}/swagger.json";
+});
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/api/salary/swagger/v1/swagger.json", "Salary API v1");
+    c.RoutePrefix = "api/salary/swagger";
+});
 
-// CORS for Next.js (must specify origin when using credentials)
 app.UseCors("frontend");
-
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Ensure DB table exists (MVP alternative to migrations)
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<SalaryDbContext>();
@@ -133,7 +137,7 @@ app.Lifetime.ApplicationStarted.Register(() =>
 {
     Console.WriteLine("\n----------------------------------------------------------------");
     Console.WriteLine("   🚀 KITHU Salary Service is running!");
-    Console.WriteLine("   📄 Swagger UI: http://localhost:8080/swagger");
+    Console.WriteLine("   📄 Swagger UI: http://74.224.97.56/api/salary/swagger");
     Console.WriteLine("----------------------------------------------------------------\n");
 });
 
