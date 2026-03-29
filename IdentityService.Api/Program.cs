@@ -8,7 +8,6 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ✅ FIX 1: Port changed from 5100 to 8080 to match Kubernetes containerPort
 builder.WebHost.UseUrls("http://0.0.0.0:8080");
 
 builder.Services.AddControllers();
@@ -18,7 +17,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy("frontend", policy =>
     {
         policy
-            .WithOrigins("http://localhost:3000")
+            .WithOrigins(
+                "http://localhost:3000",
+                "http://74.224.97.56"
+            )
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials();
@@ -51,7 +53,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// ✅ FIX 2: Read DB connection from Kubernetes env vars (with fallback for local dev)
+// Read DB connection from Kubernetes env vars
 var dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost";
 var dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? "admin";
 var dbPass = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "password";
@@ -61,10 +63,8 @@ var connStr = $"Host={dbHost};Database={dbName};Username={dbUser};Password={dbPa
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connStr));
 
-// Identity Services
 builder.Services.AddScoped<IAuthService, AuthService>();
 
-// Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var key = Encoding.ASCII.GetBytes(jwtSettings["SecretKey"]!);
 
@@ -90,15 +90,21 @@ builder.Services.AddAuthentication(x =>
 
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI();
+// ✅ Swagger configured to work behind /api/auth ingress path
+app.UseSwagger(c =>
+{
+    c.RouteTemplate = "api/auth/swagger/{documentName}/swagger.json";
+});
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/api/auth/swagger/v1/swagger.json", "Identity API v1");
+    c.RoutePrefix = "api/auth/swagger";
+});
 
 app.UseCors("frontend");
-
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Ensure DB tables exist
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -144,7 +150,7 @@ app.Lifetime.ApplicationStarted.Register(() =>
 {
     Console.WriteLine("\n----------------------------------------------------------------");
     Console.WriteLine("   🚀 KITHU Identity Service is running!");
-    Console.WriteLine("   📄 Swagger UI: http://localhost:8080/swagger");
+    Console.WriteLine("   📄 Swagger UI: http://74.224.97.56/api/auth/swagger");
     Console.WriteLine("----------------------------------------------------------------\n");
 });
 
