@@ -16,20 +16,27 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Search Service", Version = "v1" });
 });
 
+// WITH:
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("frontend", policy =>
     {
         policy
-            .WithOrigins("http://localhost:3000", "http://127.0.0.1:3000")
+            .WithOrigins("http://localhost:3000", "http://127.0.0.1:3000", "http://74.224.97.56")
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials();
     });
 });
 
+var dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost";
+var dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? "admin";
+var dbPass = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "password";
+var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "paymentappdb";
+var connStr = $"Host={dbHost};Database={dbName};Username={dbUser};Password={dbPass}";
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(connStr));
 
 // JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
