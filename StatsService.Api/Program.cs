@@ -29,8 +29,9 @@ builder.Services.AddCors(options =>
 var dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost";
 var dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? "admin";
 var dbPass = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "password";
-var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "paymentappdb";
+var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "identity_db";
 var connStr = $"Host={dbHost};Database={dbName};Username={dbUser};Password={dbPass}";
+
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connStr));
