@@ -27,9 +27,9 @@ spec:
             - name: NEXT_PUBLIC_VOTE_API_PROXY_PATH
               value: http://74.224.97.56/api
             - name: NEXT_PUBLIC_SEARCH_API_PROXY_PATH
-              value: value: http://74.224.97.56/api
+              value: http://74.224.97.56/api
             - name: NEXT_PUBLIC_STATS_API_URL
-              value: value: http://74.224.97.56/api              
+              value: http://74.224.97.56/api              
 ---
 apiVersion: v1
 kind: Service
