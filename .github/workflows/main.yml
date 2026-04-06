@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - production_live
+    paths:
+      - 'IdentityService.Api/**'
 
 jobs:
   build-and-push:
