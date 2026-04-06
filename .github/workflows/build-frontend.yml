@@ -29,6 +29,6 @@ jobs:
           build-args: |
             NEXT_PUBLIC_AUTH_API_URL=http://74.224.97.56/api
             NEXT_PUBLIC_SALARY_API_URL=http://74.224.97.56/api
-            NEXT_PUBLIC_STATS_API_URL=http://74.224.97.56/api/stats
+            NEXT_PUBLIC_STATS_API_URL=http://74.224.97.56/api
             NEXT_PUBLIC_VOTE_API_PROXY_PATH=/api/votes
             NEXT_PUBLIC_SEARCH_API_PROXY_PATH=/api/search
