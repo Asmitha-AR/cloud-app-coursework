@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: salary
+  namespace: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: salary
+  template:
+    metadata:
+      labels:
+        app: salary
+    spec:
+      containers:
+        - name: salary
+          image: pavk230/salaryservice:latest
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: salary
+  namespace: app
+spec:
+  selector:
+    app: salary
+  ports:
+    - port: 80
+      targetPort: 8080
+  type: ClusterIP
