@@ -1,0 +1,138 @@
+name: Build & Push Backend Services
+
+on:
+  push:
+    branches:
+      - production_Lavaniyah
+    paths:
+      - 'IdentityService.Api/**'
+      - 'SalaryService.Api/**'
+      - 'VoteService.Api/**'
+      - 'StatsService.Api/**'
+      - 'SearchService.Api/**'
+
+jobs:
+  build-identityservice:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Push IdentityService
+        uses: docker/build-push-action@v5
+        with:
+          context: ./IdentityService.Api
+          file: ./IdentityService.Api/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/identityservice:latest
+            ${{ secrets.DOCKER_USERNAME }}/identityservice:${{ github.sha }}
+
+  build-salaryservice:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Push SalaryService
+        uses: docker/build-push-action@v5
+        with:
+          context: ./SalaryService.Api
+          file: ./SalaryService.Api/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/salaryservice:latest
+            ${{ secrets.DOCKER_USERNAME }}/salaryservice:${{ github.sha }}
+
+  build-voteservice:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Push VoteService
+        uses: docker/build-push-action@v5
+        with:
+          context: ./VoteService.Api
+          file: ./VoteService.Api/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/voteservice:latest
+            ${{ secrets.DOCKER_USERNAME }}/voteservice:${{ github.sha }}
+
+  build-statsservice:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Push StatsService
+        uses: docker/build-push-action@v5
+        with:
+          context: ./StatsService.Api
+          file: ./StatsService.Api/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/statsservice:latest
+            ${{ secrets.DOCKER_USERNAME }}/statsservice:${{ github.sha }}
+
+  build-searchservice:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Push SearchService
+        uses: docker/build-push-action@v5
+        with:
+          context: ./SearchService.Api
+          file: ./SearchService.Api/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/searchservice:latest
+            ${{ secrets.DOCKER_USERNAME }}/searchservice:${{ github.sha }}
