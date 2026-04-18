@@ -8,9 +8,8 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.UseUrls("http://0.0.0.0:5001");
+builder.WebHost.UseUrls("http://0.0.0.0:8080");
 
-// Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCors(options =>
@@ -51,11 +50,16 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// Database
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Read DB connection from environment vars
+var dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost";
+var dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? "admin";
+var dbPass = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "password";
+var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "identity_db";
+var connStr = $"Host={dbHost};Database={dbName};Username={dbUser};Password={dbPass}";
 
-// Identity Services
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(connStr));
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Authentication
@@ -84,16 +88,10 @@ builder.Services.AddAuthentication(x =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-// Configure the HTTP request pipeline.
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// app.UseHttpsRedirection();
-
-// CORS for Next.js (must specify origin when using credentials)
 app.UseCors("frontend");
-
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -101,11 +99,8 @@ app.UseAuthorization();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    // Wait for DB to be ready in Docker
-    try 
+    try
     {
-        // For shared DB in MVP, EnsureCreated only works if the DB is empty.
-        // We manually ensure ALL specific tables exist to avoid partial init issues.
         var sql = @"
             CREATE TABLE IF NOT EXISTS ""Users"" (
                 ""Id"" uuid NOT NULL CONSTRAINT ""PK_Users"" PRIMARY KEY,
@@ -115,7 +110,6 @@ using (var scope = app.Services.CreateScope())
                 ""CreatedAt"" timestamp with time zone NOT NULL
             );
 
-            -- Ensure Username is NULLABLE 
             ALTER TABLE ""Users"" ALTER COLUMN ""Username"" DROP NOT NULL;
 
             CREATE UNIQUE INDEX IF NOT EXISTS ""IX_Users_Email"" ON ""Users"" (""Email"");
@@ -135,12 +129,13 @@ using (var scope = app.Services.CreateScope())
                 ""UserEmail"" text,
                 ""SubmittedAt"" timestamp with time zone NOT NULL
             );";
-            
+
         dbContext.Database.ExecuteSqlRaw(sql);
+        Console.WriteLine("✅ DB initialized successfully.");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"DB Initialization failed: {ex.Message}");
+        Console.WriteLine($"❌ DB Connection failed: {ex.Message}");
     }
 }
 
@@ -150,7 +145,7 @@ app.Lifetime.ApplicationStarted.Register(() =>
 {
     Console.WriteLine("\n----------------------------------------------------------------");
     Console.WriteLine("   🚀 KITHU Salary Service is running!");
-    Console.WriteLine("   📄 Swagger UI: http://localhost:5001/swagger");
+    Console.WriteLine("   📄 Swagger UI: http://localhost:5002/swagger");
     Console.WriteLine("----------------------------------------------------------------\n");
 });
 

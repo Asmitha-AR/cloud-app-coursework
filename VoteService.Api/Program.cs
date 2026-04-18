@@ -7,7 +7,7 @@ using VoteService.Api.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.UseUrls("http://0.0.0.0:5002");
+builder.WebHost.UseUrls("http://0.0.0.0:8080");
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -43,15 +43,21 @@ builder.Services.AddCors(options =>
     options.AddPolicy("frontend", policy =>
     {
         policy
-            .WithOrigins("http://localhost:3000", "http://127.0.0.1:3000")
+            .WithOrigins("http://localhost:3000")
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials();
     });
 });
 
+var dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost";
+var dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? "admin";
+var dbPass = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "password";
+var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "identity_db";
+var connStr = $"Host={dbHost};Database={dbName};Username={dbUser};Password={dbPass}";
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(connStr));
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var key = Encoding.ASCII.GetBytes(jwtSettings["SecretKey"]!);
@@ -86,7 +92,6 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseCors("frontend");
-
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -139,10 +144,11 @@ using (var scope = app.Services.CreateScope())
             ALTER TABLE IF EXISTS ""SalarySubmissions"" ADD COLUMN IF NOT EXISTS ""IsLocked"" boolean NOT NULL DEFAULT false;";
 
         dbContext.Database.ExecuteSqlRaw(sql);
+        Console.WriteLine("✅ Vote DB initialized successfully.");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"Vote DB initialization failed: {ex.Message}");
+        Console.WriteLine($"❌ Vote DB initialization failed: {ex.Message}");
     }
 }
 
@@ -151,8 +157,8 @@ app.MapControllers();
 app.Lifetime.ApplicationStarted.Register(() =>
 {
     Console.WriteLine("\n----------------------------------------------------------------");
-    Console.WriteLine("   Asmitha Vote Service is running!");
-    Console.WriteLine("   Swagger UI: http://localhost:5002/swagger");
+    Console.WriteLine("   🗳️ Asmitha Vote Service is running!");
+    Console.WriteLine("   📄 Swagger UI: http://localhost:5005/swagger");
     Console.WriteLine("----------------------------------------------------------------\n");
 });
 
