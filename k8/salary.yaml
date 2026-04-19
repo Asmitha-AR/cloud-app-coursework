@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: salaryservice
+  namespace: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: salaryservice
+  template:
+    metadata:
+      labels:
+        app: salaryservice
+    spec:
+      containers:
+        - name: salaryservice
+          image: it21176210/salaryservice:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ConnectionStrings__DefaultConnection
+              value: Host=postgres.data.svc.cluster.local;Database=paymentappdb;Username=admin;Password=password123
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: salaryservice
+  namespace: app
+spec:
+  selector:
+    app: salaryservice
+  ports:
+    - port: 80
+      targetPort: 8080
