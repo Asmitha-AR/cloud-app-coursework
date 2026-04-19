@@ -21,15 +21,15 @@ spec:
             - containerPort: 3000
           env:
             - name: NEXT_PUBLIC_AUTH_API_URL
-              value: http://74.224.97.56/api
+              value: http://20.44.215.186/api
             - name: NEXT_PUBLIC_SALARY_API_URL
-              value: http://74.224.97.56/api
+              value: http://20.44.215.186/api
             - name: NEXT_PUBLIC_VOTE_API_PROXY_PATH
-              value: http://74.224.97.56/api
+              value: http://20.44.215.186/api
             - name: NEXT_PUBLIC_SEARCH_API_PROXY_PATH
-              value: http://74.224.97.56/api
+              value: http://20.44.215.186/api
             - name: NEXT_PUBLIC_STATS_API_URL
-              value: http://74.224.97.56/api
+              value: http://20.44.215.186/api
 ---
 apiVersion: v1
 kind: Service
