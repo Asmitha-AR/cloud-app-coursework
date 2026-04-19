@@ -1,0 +1,73 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  namespace: app
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /api/auth
+            pathType: Prefix
+            backend:
+              service:
+                name: identityservice
+                port:
+                  number: 80
+          - path: /api/Auth
+            pathType: Prefix
+            backend:
+              service:
+                name: identityservice
+                port:
+                  number: 80
+          - path: /api/salaries
+            pathType: Prefix
+            backend:
+              service:
+                name: salaryservice
+                port:
+                  number: 80
+          - path: /api/Salaries
+            pathType: Prefix
+            backend:
+              service:
+                name: salaryservice
+                port:
+                  number: 80
+          - path: /api/votes
+            pathType: Prefix
+            backend:
+              service:
+                name: voteservice
+                port:
+                  number: 80
+          - path: /api/reports
+            pathType: Prefix
+            backend:
+              service:
+                name: voteservice
+                port:
+                  number: 80
+          - path: /api/stats
+            pathType: Prefix
+            backend:
+              service:
+                name: statsservice
+                port:
+                  number: 80
+          - path: /api/search
+            pathType: Prefix
+            backend:
+              service:
+                name: searchservice
+                port:
+                  number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80

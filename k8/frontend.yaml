@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: it21176210/frontend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NEXT_PUBLIC_AUTH_API_URL
+              value: http://74.224.97.56/api
+            - name: NEXT_PUBLIC_SALARY_API_URL
+              value: http://74.224.97.56/api
+            - name: NEXT_PUBLIC_VOTE_API_PROXY_PATH
+              value: http://74.224.97.56/api
+            - name: NEXT_PUBLIC_SEARCH_API_PROXY_PATH
+              value: http://74.224.97.56/api
+            - name: NEXT_PUBLIC_STATS_API_URL
+              value: http://74.224.97.56/api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: app
+spec:
+  selector:
+    app: frontend
+  ports:
+    - port: 80
+      targetPort: 3000
+  type: ClusterIP
