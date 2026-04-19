@@ -19,7 +19,7 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
-           env:
+          env:
             - name: NEXT_PUBLIC_AUTH_API_URL
               value: http://52.140.86.200/api
             - name: NEXT_PUBLIC_SALARY_API_URL
