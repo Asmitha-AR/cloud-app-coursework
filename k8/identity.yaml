@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identityservice
+  namespace: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: identityservice
+  template:
+    metadata:
+      labels:
+        app: identityservice
+    spec:
+      containers:
+        - name: identityservice
+          image: it21176210/identityservice:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_HOST
+              value: postgres.data.svc.cluster.local
+            - name: DB_USER
+              value: admin
+            - name: DB_PASSWORD
+              value: password123
+            - name: DB_NAME
+              value: identity_db
+            - name: ConnectionStrings__DefaultConnection
+              value: Host=postgres.data.svc.cluster.local;Database=identity_db;Username=admin;Password=password123
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: identityservice
+  namespace: app
+spec:
+  selector:
+    app: identityservice
+  ports:
+    - port: 80
+      targetPort: 8080
