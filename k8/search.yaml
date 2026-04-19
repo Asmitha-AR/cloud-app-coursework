@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: searchservice
+  namespace: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: searchservice
+  template:
+    metadata:
+      labels:
+        app: searchservice
+    spec:
+      containers:
+        - name: searchservice
+          image: lavaniyah/searchservice:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_HOST
+              value: postgres.data.svc.cluster.local
+            - name: DB_USER
+              value: admin
+            - name: DB_PASSWORD
+              value: password123
+            - name: DB_NAME
+              value: identity_db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: searchservice
+  namespace: app
+spec:
+  selector:
+    app: searchservice
+  ports:
+    - port: 80
+      targetPort: 8080
+  type: ClusterIP
