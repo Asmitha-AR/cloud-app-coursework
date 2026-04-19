@@ -18,7 +18,7 @@ spec:
           image: it21176210/voteservice:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 8080
+            - containerPort: 5002
           env:
             - name: ConnectionStrings__DefaultConnection
               value: Host=postgres.data.svc.cluster.local;Database=paymentappdb;Username=admin;Password=password123
@@ -33,4 +33,4 @@ spec:
     app: voteservice
   ports:
     - port: 80
-      targetPort: 8080
+      targetPort: 5002

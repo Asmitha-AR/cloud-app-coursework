@@ -18,16 +18,8 @@ spec:
           image: it21176210/identityservice:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 8080
+            - containerPort: 5100
           env:
-            - name: DB_HOST
-              value: postgres.data.svc.cluster.local
-            - name: DB_USER
-              value: admin
-            - name: DB_PASSWORD
-              value: password123
-            - name: DB_NAME
-              value: identity_db
             - name: ConnectionStrings__DefaultConnection
               value: Host=postgres.data.svc.cluster.local;Database=identity_db;Username=admin;Password=password123
 ---
@@ -41,4 +33,4 @@ spec:
     app: identityservice
   ports:
     - port: 80
-      targetPort: 8080
+      targetPort: 5100
