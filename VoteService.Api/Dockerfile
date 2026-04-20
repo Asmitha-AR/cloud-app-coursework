@@ -1,15 +1,13 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
-
-COPY ["VoteService.Api/VoteService.Api.csproj", "VoteService.Api/"]
-RUN dotnet restore "VoteService.Api/VoteService.Api.csproj"
-
+COPY ["VoteService.Api.csproj", "."]
+RUN dotnet restore
 COPY . .
-WORKDIR "/src/VoteService.Api"
-RUN dotnet publish "VoteService.Api.csproj" -c Release -o /app/publish
+RUN dotnet publish -c Release -o /app/publish
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
-COPY --from=build /app/publish .
+ENV ASPNETCORE_HTTP_PORTS=8080
 EXPOSE 8080
+COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "VoteService.Api.dll"]

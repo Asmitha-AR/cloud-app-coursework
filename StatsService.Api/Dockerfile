@@ -1,15 +1,13 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
-
-COPY ["StatsService.Api/StatsService.Api.csproj", "StatsService.Api/"]
-RUN dotnet restore "StatsService.Api/StatsService.Api.csproj"
-
+COPY ["StatsService.Api.csproj", "."]
+RUN dotnet restore
 COPY . .
-WORKDIR "/src/StatsService.Api"
-RUN dotnet publish "StatsService.Api.csproj" -c Release -o /app/publish
+RUN dotnet publish -c Release -o /app/publish
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
-COPY --from=build /app/publish .
+ENV ASPNETCORE_HTTP_PORTS=8080
 EXPOSE 8080
+COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "StatsService.Api.dll"]

@@ -1,33 +1,36 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: stats
+  name: statsservice
   namespace: app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: stats
+      app: statsservice
   template:
     metadata:
       labels:
-        app: stats
+        app: statsservice
     spec:
       containers:
-        - name: stats
+        - name: statsservice
           image: pavk230/statsservice:latest
+          imagePullPolicy: Always
           ports:
-            - containerPort: 8080
+            - containerPort: 5019
+          env:
+            - name: ConnectionStrings__DefaultConnection
+              value: Host=postgres.data.svc.cluster.local;Database=paymentappdb;Username=admin;Password=password123
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: stats
+  name: statsservice
   namespace: app
 spec:
   selector:
-    app: stats
+    app: statsservice
   ports:
     - port: 80
-      targetPort: 8080
-  type: ClusterIP
+      targetPort: 5019

@@ -12,42 +12,58 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: identity
+                name: identityservice
                 port:
                   number: 80
-
+          - path: /api/Auth
+            pathType: Prefix
+            backend:
+              service:
+                name: identityservice
+                port:
+                  number: 80
           - path: /api/salaries
             pathType: Prefix
             backend:
               service:
-                name: salary
+                name: salaryservice
                 port:
                   number: 80
-
+          - path: /api/Salaries
+            pathType: Prefix
+            backend:
+              service:
+                name: salaryservice
+                port:
+                  number: 80
           - path: /api/votes
             pathType: Prefix
             backend:
               service:
-                name: vote
+                name: voteservice
                 port:
                   number: 80
-
-          - path: /api/search
+          - path: /api/reports
             pathType: Prefix
             backend:
               service:
-                name: search
+                name: voteservice
                 port:
                   number: 80
-
           - path: /api/stats
             pathType: Prefix
             backend:
               service:
-                name: stats
+                name: statsservice
                 port:
                   number: 80
-
+          - path: /api/search
+            pathType: Prefix
+            backend:
+              service:
+                name: searchservice
+                port:
+                  number: 80
           - path: /
             pathType: Prefix
             backend:

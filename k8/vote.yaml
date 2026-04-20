@@ -1,33 +1,36 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: vote
+  name: voteservice
   namespace: app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: vote
+      app: voteservice
   template:
     metadata:
       labels:
-        app: vote
+        app: voteservice
     spec:
       containers:
-        - name: vote
+        - name: voteservice
           image: pavk230/voteservice:latest
+          imagePullPolicy: Always
           ports:
-            - containerPort: 8080
+            - containerPort: 5002
+          env:
+            - name: ConnectionStrings__DefaultConnection
+              value: Host=postgres.data.svc.cluster.local;Database=paymentappdb;Username=admin;Password=password123
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: vote
+  name: voteservice
   namespace: app
 spec:
   selector:
-    app: vote
+    app: voteservice
   ports:
     - port: 80
-      targetPort: 8080
-  type: ClusterIP
+      targetPort: 5002
