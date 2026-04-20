@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - production_pravini
-    paths:
-      - "web/**"
 
 jobs:
   build-and-push:
