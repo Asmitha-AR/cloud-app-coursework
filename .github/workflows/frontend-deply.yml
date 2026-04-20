@@ -39,3 +39,4 @@ jobs:
             NEXT_PUBLIC_VOTE_API_PROXY_PATH=http://20.205.144.161/api
             NEXT_PUBLIC_SEARCH_API_PROXY_PATH=http://20.205.144.161/api
             NEXT_PUBLIC_STATS_API_URL=http://20.205.144.161/api
+            
